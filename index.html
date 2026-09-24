@@ -1,0 +1,191 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<title>PesaCerto</title>
+<link rel="icon" href="logo.png">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Sora:wght@600;700;800&family=Inter:wght@400;500;600;700&family=IBM+Plex+Mono:wght@500;700&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="styles.css">
+<script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf/2.5.1/jspdf.umd.min.js"></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf-autotable/3.8.2/jspdf.plugin.autotable.min.js"></script>
+</head>
+<body>
+
+<header class="topbar">
+  <div class="topbar-inner">
+    <div class="brand">
+      <div class="logo-box">
+        <!-- Coloque seu arquivo "logo.png" nesta mesma pasta -->
+        <img src="logo.png" alt="Logo Mini Box Mall Açougue" onerror="this.style.display='none'; this.nextElementSibling.style.display='flex';">
+        <div class="logo-fallback">MB</div>
+      </div>
+      <div class="brand-text">
+        <span class="brand-title">PesaCerto</span>
+        <span class="brand-sub">Mini Box Mall Açougue</span>
+      </div>
+    </div>
+    <div class="topbar-total" id="topbarTotal">
+      <span class="lbl">Líquido total</span>
+      <span class="val" id="topbarTotalVal">0,000 <small>kg</small></span>
+    </div>
+  </div>
+</header>
+
+<main class="content">
+
+  <div class="tab-panel panel-pesar active" data-tab="pesar">
+    <div class="panel-title">
+      <h2>Nova pesagem</h2>
+      <span class="pill-hint">soma automática por código</span>
+    </div>
+
+    <div class="card">
+
+      <div class="subsection">
+        <span class="subsection-lbl">Identificação</span>
+        <div class="grid-2">
+          <div class="field">
+            <label for="codigo">Código</label>
+            <input type="text" id="codigo" placeholder="001">
+          </div>
+          <div class="field">
+            <label for="nome">Nome da carne</label>
+            <input type="text" id="nome" placeholder="Picanha...">
+          </div>
+        </div>
+        <div class="found-tag" id="foundTag"><span class="dot"></span><span id="foundTagTxt">Código já cadastrado — esta pesagem vai somar</span></div>
+        <div class="notfound-tag" id="notfoundTag" hidden>
+          <div class="notfound-msg"><span class="dot"></span><span>Código não cadastrado</span></div>
+          <button type="button" class="btn-registrar" id="btnRegistrarCodigo">➕ Registrar este código</button>
+        </div>
+      </div>
+
+      <div class="divider"></div>
+
+      <div class="subsection">
+        <span class="subsection-lbl">Pesagem</span>
+        <div class="grid-2">
+          <div class="field">
+            <label for="bandeja">Bandeja / tara</label>
+            <select id="bandeja">
+              <option value="grande">Bandeja grande</option>
+              <option value="pequena">Bandeja pequena</option>
+              <option value="personalizada">Tara personalizada</option>
+              <option value="nenhuma">Sem bandeja (0 kg)</option>
+            </select>
+          </div>
+          <div class="field">
+            <label for="peso">Peso na balança</label>
+            <input type="number" id="peso" inputmode="numeric" step="1" min="0" placeholder="1000">
+            <span class="hint">1kg = 1000 · 1,5kg = 1500</span>
+          </div>
+        </div>
+
+        <div class="field" id="taraPersonalizadaField">
+          <label for="taraPersonalizada">Tara personalizada (gramas)</label>
+          <input type="number" id="taraPersonalizada" inputmode="numeric" step="1" min="0" placeholder="4">
+          <span class="hint">Em gramas: 4 = 4g · 1000 = 1kg</span>
+        </div>
+      </div>
+
+      <div class="display-panel">
+        <span class="display-lbl">Peso líquido desta pesagem</span>
+        <div class="display-readout"><span id="previewLiquido">0,000</span><small>kg</small></div>
+      </div>
+
+      <button class="btn btn-primary btn-lg" id="btnAdd">
+        <span class="btn-ico">＋</span> Adicionar pesagem
+      </button>
+    </div>
+  </div>
+
+  <div class="tab-panel panel-tara" data-tab="tara">
+    <div class="panel-title">
+      <h2>Tara das bandejas</h2>
+    </div>
+    <div class="card">
+      <div class="grid-2">
+        <div class="field">
+          <label for="taraGrande">Bandeja grande <span class="unit">kg</span></label>
+          <input type="number" id="taraGrande" inputmode="decimal" step="0.001" min="0">
+        </div>
+        <div class="field">
+          <label for="taraPequena">Bandeja pequena <span class="unit">kg</span></label>
+          <input type="number" id="taraPequena" inputmode="decimal" step="0.001" min="0">
+        </div>
+      </div>
+      <button class="btn btn-outline-ok btn-lg" id="btnSaveTara">Salvar tara</button>
+    </div>
+  </div>
+
+  <div class="tab-panel panel-lista" data-tab="lista">
+    <div class="panel-title">
+      <h2>Lista de pesagens</h2>
+      <div class="panel-title-pills">
+        <span class="pill-hint" id="listCountHint">0 itens</span>
+        <button class="pill-hint pill-lixeira" id="btnToggleLixeira" type="button">
+          <span class="ico">🗑️</span> Lixeira <span class="badge" id="lixeiraBadge">0</span>
+        </button>
+      </div>
+    </div>
+
+    <div class="lixeira-panel" id="lixeiraPanel" hidden>
+      <div class="lixeira-head">
+        <span>Itens excluídos ficam aqui por 7 dias e podem ser recuperados</span>
+        <button class="btn btn-outline-danger btn-sm" id="btnEsvaziarLixeira" type="button">Esvaziar lixeira</button>
+      </div>
+      <div class="lixeira-list" id="lixeiraList"></div>
+    </div>
+
+    <div class="list" id="lista"></div>
+
+    <div class="action-grid">
+      <button class="btn btn-ok" id="btnCopy"><span class="btn-ico">📋</span> Copiar resultado</button>
+      <button class="btn btn-outline-slate" id="btnPdf"><span class="btn-ico">📄</span> Baixar PDF</button>
+      <button class="btn btn-outline-danger" id="btnClear"><span class="btn-ico">🗑️</span> Limpar tudo</button>
+    </div>
+    <button class="btn btn-primary btn-lg" id="btnEncerrar">
+      <span class="btn-ico">✅</span> Encerrar pesagem (baixar PDF)
+    </button>
+
+    <p class="footer-note">Dados e códigos ficam salvos apenas neste navegador.</p>
+  </div>
+
+</main>
+
+<div class="totals" id="totals">
+  <div class="totals-inner">
+    <div class="item"><div class="lbl">Itens</div><div class="val" id="totalItens">0</div></div>
+    <div class="item"><div class="lbl">Bruto</div><div class="val" id="totalBruto">0,000 kg</div></div>
+    <div class="item destaque"><div class="lbl">Líquido</div><div class="val" id="totalLiquido">0,000 kg</div></div>
+  </div>
+</div>
+
+<nav class="tabbar" aria-label="Navegação">
+  <button class="tabbar-btn active" data-tab-target="pesar" type="button"><span class="ico">⚖️</span><span>Pesar</span></button>
+  <button class="tabbar-btn" data-tab-target="lista" type="button"><span class="ico">📋</span><span>Lista</span></button>
+  <button class="tabbar-btn" data-tab-target="tara" type="button"><span class="ico">⚙️</span><span>Tara</span></button>
+</nav>
+
+<div class="toast" id="toast" role="status" aria-live="polite"></div>
+
+<div class="modal-overlay" id="modalOverlay" hidden>
+  <div class="modal-box">
+    <div class="modal-ico">🔒</div>
+    <p class="modal-msg" id="modalMsg">Confirmar exclusão?</p>
+    <div class="modal-hint">Senha: <b>1234</b></div>
+    <input type="text" inputmode="numeric" class="modal-input" id="modalSenhaInput" placeholder="Digite a senha" autocomplete="off">
+    <p class="modal-erro" id="modalErro">Senha incorreta, tente novamente.</p>
+    <div class="modal-actions">
+      <button type="button" class="btn btn-outline-slate" id="modalCancelar">Cancelar</button>
+      <button type="button" class="btn btn-primary" id="modalConfirmar">Confirmar exclusão</button>
+    </div>
+  </div>
+</div>
+
+<script src="script.js"></script>
+</body>
+</html>
