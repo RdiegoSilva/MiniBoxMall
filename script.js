@@ -51,20 +51,95 @@
   // Catálogo padrão de códigos → nome da carne (tipo de bandeja default: "grande").
   // Só é usado para PREENCHER códigos que ainda não existem no cadastro do navegador —
   // nunca sobrescreve um nome que você já editou/salvou manualmente.
+  var CATALOGO_VERSAO = "2026-09-24";
+  var CATALOGO_KEY = "pesacerto_catalogo_versao";
   var DEFAULT_CODIGOS = {
+    // SUÍNOS
+    "206": "CARRE SUÍNO",
+    "6081": "COSTELA SUÍNA",
+    "10148": "COSTELA SUÍNA CON",
+    "9265": "PICANHA SUÍNA DO CHEF",
+    "8909": "PRIME RIB GUAÍUBA SUÍNO",
+    "8595": "SOBREPALETA SUÍNA",
+    "212": "PERNIL SUÍNO C/OSSO",
+    "8940": "PERNIL SUÍNO S/OSSO",
+    "10335": "PICANHA SUÍNA PERDIGÃO NABRASA",
+    "789300091189": "PICANHA SUÍNA SADIA 900G",
+    "8903": "SARRAB SUÍNO",
+    "926": "TRIPA SUÍNA",
+    // SUÍNOS RESF
+    "629": "BISTECA PALETA SUÍNA",
+    "8901": "COPA LOMBO SUÍNO",
+    "627": "COSTELA SUÍNA",
+    "8900": "LOMBO SUÍNO C/OSSO",
+    "8899": "PANCETA SUÍNA",
+    "624": "PERNIL SUÍNO",
+    "7181": "TOUCINHO SUÍNO",
     // BOVINOS
+    "7534": "ANCHO ESTÂNCIA 92",
+    "7643": "BABY BEEF ESTÂNCIA 92",
+    "938": "BANANINHA P/ CHURRASCO",
+    "7645": "BOMBOM ALC ESTÂNCIA 92",
+    "9952": "CHORIZO ESTÂNCIA 92 ANGUS",
+    "7644": "CHORIZO ESTÂNCIA 92 PEDAÇO",
+    "8323": "COSTELA JAN ESTÂNCIA 92",
+    "10760": "CUPIM BOLINHA ESTÂNCIA 92",
+    "861": "CUPIM BOVINO CONG",
+    "8854": "FRALDINHA ESTÂNCIA 92",
+    "8144": "MAMINHA ALC ESTÂNCIA 92",
+    "9953": "MAMINHA ANA PAUL ANG",
+    "8836": "MAMINHA ARG PLATE",
+    "9589": "MAMINHA BOV PLENA",
+    "9609": "MAMINHA FRIBOI",
+    "9333": "MAMINHA FRIGOTIL",
+    "10811": "MAMINHA IMP BEEF CLUB",
+    "9608": "MAMINHA MATURATTA",
+    "8881": "MAMINHA PUL NACIONAL",
+    "10406": "MAMINHA PUL SELECTION",
+    "9259": "MAMINHA PUL URUGUAIA",
+    "9611": "MAMINHA URUG FRIGOY",
+    "7896": "PICANHA ARG CABANAS LAS",
+    "10568": "PICANHA ARG FINEXCOR",
+    "9613": "PICANHA ARG GORINA",
+    "9954": "PICANHA ANA PAUL ANG",
+    "10650": "PICANHA AUS KILCOY",
+    "8276": "PICANHA ESTÂNCIA 92",
+    "9612": "PICANHA MATURATTA",
+    "9260": "PICANHA PUL NACIONAL",
+    "9261": "PICANHA PUL URUGUAIA",
+    "9615": "PICANHA URUG PANDO",
+    "10891": "PICANHA BOVINA FRIBOI EM MEDALHÃO",
+    "9956": "SHORT RIBS MINERVA ANGUS",
+    "8238": "TOMAHAWK ESTÂNCIA 92",
+    // BOVINOS RESF/CONG
+    "9604": "CHORIZO DO CHEF",
+    "8866": "CHORIZO MINERVA MESTRE",
+    // BOVINOS DIV - MIÚDOS
+    "805": "BAÇO BOVINO",
+    "867": "BIFE FÍGADO BOVINO",
+    "754": "BUCHO BOVINO",
+    "1169": "CORAÇÃO BOVINO",
+    "4": "FÍGADO BOVINO",
+    "934": "BIFE FÍGADO BOVINO",
+    "1936": "LÍNGUA BOVINA",
+    "748": "MOCOTÓ BOVINO",
+    "755": "PANELADA MINIBOX",
+    "1645": "RABO BOVINO",
+    "213": "RINS BOVINO",
+    "749": "TRIPA BOVINA",
+    // BOVINOS — COSTELA / DIANTEIRO E TRÁS
     "184": "COSTEL P.A",
     "9048": "COST JANELÃO RESERVA",
     "10961": "COST TRASEIRO FRIBOI MINGA",
-    "200": "BIFE AMACIADO",
+    "200": "BIFE AMAC",
     "8670": "BIFE LIGHT",
-    "167": "BISTECA PAULISTA",
-    "6096": "BISTECA GAUCHA",
+    "167": "BIST PAULI",
+    "6096": "BISTECA GA",
     "319": "COST PEITO",
     "180": "CUPIM",
     "176": "LOMBO C/OS",
-    "68": "MÃO DE VACA",
-    "179": "CARNE MUIDA",
+    "68": "MÃO DE VAC",
+    "179": "MOÍDA",
     "815": "MÚSCULO BO",
     "182": "OSSO BUCO",
     "6035": "PALETA",
@@ -72,21 +147,22 @@
     // BOVINOS — CORTES TRÁS
     "390": "ALCATRA BO",
     "677": "BISTECA BO",
-    "7272": "CAPA CONTRA",
-    "397": "CONTRA FILE",
+    "7272": "CAPA CONTR",
+    "397": "CONTRA FIL",
     "398": "COXÃO DURO",
     "388": "COXÃO MOLE",
-    "429": "FILÉ MIGNO",
+    "429": "FILE MIGNO",
     "650": "FRALDINHA",
     "389": "LAGARTO",
-    "384": "MAMINHA RESF",
-    "653": "MÚSCULO BO",
-    "9686": "MÚSCULO BO",
+    "384": "MAMINHA",
+    "653": "MUSCULO BO",
+    "9686": "MUSCULO BO",
     "399": "PATINHO",
     "385": "PICANHA",
     "8915": "PICANHA FATIADA FRIGOTIL",
-    // DIVERSOS
-    "9298": "CARNE DO SOL",
+    // BOVINOS — DIVERSOS
+    "9298": "CARNE DE SOL",
+    // OVINOS E CAPRINOS
     "10648": "ALCATRA CORD ESTÂNCIA 92",
     "7614": "BISTECA DE CARNEIRO",
     "9785": "CARRE CORD C.OURO FRANCES",
@@ -99,16 +175,24 @@
     "10649": "T BONE CORD ESTÂNCIA 92"
   };
 
-  // Preenche no cadastro os códigos padrão que ainda não existem (não mexe nos que você já tem/editou)
+  // Aplica a lista padrão: códigos novos são criados; ao subir a versão do catálogo, os nomes
+  // dos códigos da lista são atualizados (o tipo de bandeja já salvo é mantido).
   (function mesclarCodigosPadrao(){
     var alterado = false;
+    var versaoSalva = null;
+    try{ versaoSalva = localStorage.getItem(CATALOGO_KEY); }catch(e){}
+    var atualizarNomes = versaoSalva !== CATALOGO_VERSAO;
     Object.keys(DEFAULT_CODIGOS).forEach(function(cod){
       if(!codigos[cod]){
         codigos[cod] = { nome: DEFAULT_CODIGOS[cod], tipo: "grande" };
         alterado = true;
+      } else if(atualizarNomes && codigos[cod].nome !== DEFAULT_CODIGOS[cod]){
+        codigos[cod].nome = DEFAULT_CODIGOS[cod];
+        alterado = true;
       }
     });
     if(alterado) safeSet(CODIGOS_KEY, codigos);
+    try{ localStorage.setItem(CATALOGO_KEY, CATALOGO_VERSAO); }catch(e){}
   })();
 
   // lixeira: [{ id, tipo:'item'|'lote', label, deletedData, deletedHora, item?:{...}, items?:[...] }]
@@ -125,6 +209,14 @@
   var nomeInput = document.getElementById("nome");
   var bandejaSelect = document.getElementById("bandeja");
   var pesoInput = document.getElementById("peso");
+  var qtdInput = document.getElementById("qtdBandejas");
+  var qtdMenos = document.getElementById("qtdMenos");
+  var qtdMais = document.getElementById("qtdMais");
+  var qtdBandejasField = document.getElementById("qtdBandejasField");
+  var mistaField = document.getElementById("mistaField");
+  var qtdGrandesInput = document.getElementById("qtdGrandes");
+  var qtdPequenasInput = document.getElementById("qtdPequenas");
+  var taraExtraInput = document.getElementById("taraExtra");
   var taraPersonalizadaField = document.getElementById("taraPersonalizadaField");
   var taraPersonalizadaInput = document.getElementById("taraPersonalizada");
   var previewLiquido = document.getElementById("previewLiquido");
@@ -369,8 +461,11 @@
   });
 
   function toggleTaraPersonalizadaField(){
-    if(bandejaSelect.value === "personalizada"){ taraPersonalizadaField.classList.remove("hidden"); taraPersonalizadaField.style.display = ""; }
+    var v = bandejaSelect.value;
+    if(v === "personalizada"){ taraPersonalizadaField.classList.remove("hidden"); taraPersonalizadaField.style.display = ""; }
     else{ taraPersonalizadaField.style.display = "none"; }
+    mistaField.style.display = (v === "mista") ? "" : "none";
+    qtdBandejasField.style.display = (v === "mista" || v === "nenhuma") ? "none" : "";
   }
 
   function taraFor(tipo){
@@ -379,7 +474,44 @@
     if(tipo === "personalizada") return gramasToKg(taraPersonalizadaInput.value) || 0;
     return 0;
   }
-  function tipoLabel(tipo){
+  function getQtd(){
+    var n = parseInt(qtdInput.value, 10);
+    return (isNaN(n) || n < 1) ? 1 : Math.min(n, 20);
+  }
+  function setQtd(n){
+    qtdInput.value = Math.max(1, Math.min(20, n));
+    updatePreview();
+  }
+  function lerQtdMista(input){
+    var n = parseInt(input.value, 10);
+    return (isNaN(n) || n < 0) ? 0 : Math.min(n, 20);
+  }
+  // soma valores em gramas separados por + ; ou espaço (ex.: "4+4+10" = 18 g)
+  function lerExtraGramas(){
+    var soma = 0;
+    String(taraExtraInput.value || "").replace(/,/g, ".").split(/[+;\s]+/).forEach(function(x){
+      var n = parseFloat(x);
+      if(!isNaN(n) && n > 0) soma += n;
+    });
+    return Math.round(soma * 1000) / 1000;
+  }
+  function getMista(){ return { g: lerQtdMista(qtdGrandesInput), p: lerQtdMista(qtdPequenasInput), x: lerExtraGramas() }; }
+  function taraTotal(tipo){
+    if(tipo === "mista"){ var m = getMista(); return m.g * taras.grande + m.p * taras.pequena + m.x / 1000; }
+    return taraFor(tipo) * getQtd();
+  }
+  function tipoLabel(tipo, qtd, mista){
+    if(tipo === "mista"){
+      var m = mista || { g: 0, p: 0, x: 0 }, partes = [];
+      if(m.g) partes.push(m.g + "× grande");
+      if(m.p) partes.push(m.p + "× pequena");
+      if(m.x) partes.push(String(m.x).replace(".", ",") + " g personalizada");
+      return "Bandejas: " + (partes.join(" + ") || "nenhuma");
+    }
+    var base = tipoLabelBase(tipo);
+    return (qtd && qtd > 1 && tipo !== "nenhuma") ? qtd + "× " + base : base;
+  }
+  function tipoLabelBase(tipo){
     if(tipo === "grande") return "Bandeja grande";
     if(tipo === "pequena") return "Bandeja pequena";
     if(tipo === "personalizada") return "Tara personalizada";
@@ -396,7 +528,7 @@
   function updatePreview(){
     var peso = scaleToKg(pesoInput.value);
     if(isNaN(peso)) peso = 0;
-    var tara = taraFor(bandejaSelect.value);
+    var tara = taraTotal(bandejaSelect.value);
     previewLiquido.textContent = fmt(peso - tara);
     tick(displayReadout);
   }
@@ -479,6 +611,10 @@
     pesoInput.value = "";
     taraPersonalizadaInput.value = "";
     bandejaSelect.value = "grande";
+    qtdInput.value = 1;
+    qtdGrandesInput.value = 1;
+    qtdPequenasInput.value = 1;
+    taraExtraInput.value = "";
     foundTag.classList.remove("show", "checking");
     notfoundTag.classList.remove("show");
     toggleTaraPersonalizadaField();
@@ -618,7 +754,7 @@
         var meta = document.createElement("div");
         meta.className = "ticket-meta";
         meta.innerHTML =
-          "<span>" + tipoLabel(item.tipoUltimo) + "</span>" +
+          "<span>" + tipoLabel(item.tipoUltimo, item.qtdUltimo, item.mistaUltimo) + "</span>" +
           "<span>Bruto: <b>" + fmt(ag.bruto) + " kg</b></span>" +
           "<span>Tara: <b>" + fmt(ag.tara) + " kg</b></span>" +
           "<span>Última: <b>" + item.atualizadoData + " " + item.atualizadoHora + "</b></span>";
@@ -638,7 +774,7 @@
           var row = document.createElement("div");
           row.className = "pesagem-row";
           row.innerHTML =
-            "<span>" + p.data + " " + p.hora + " — " + tipoLabel(p.tipo) + "</span>" +
+            "<span>" + p.data + " " + p.hora + " — " + tipoLabel(p.tipo, p.qtdBandejas, p.mista) + "</span>" +
             "<span>Bruto <b>" + fmt(p.pesoBruto) + "</b> · Tara <b>" + fmt(p.tara) + "</b> · Líq <b>" + fmt(p.pesoBruto - p.tara) + "</b> kg</span>";
           var rm = document.createElement("button");
           rm.className = "btn btn-outline-danger btn-remover-pesagem";
@@ -690,9 +826,11 @@
       return;
     }
 
-    var tara = taraFor(tipo);
+    var qtdBandejas = getQtd();
+    var mista = (tipo === "mista") ? getMista() : null;
+    var tara = taraTotal(tipo);
     var t = agora();
-    var pesagem = { pesoBruto: peso, tara: tara, tipo: tipo, data: t.data, hora: t.hora, horarioIso: t.iso };
+    var pesagem = { pesoBruto: peso, tara: tara, tipo: tipo, qtdBandejas: qtdBandejas, mista: mista, data: t.data, hora: t.hora, horarioIso: t.iso };
 
     var idxExistente = -1;
     if(codigo){
@@ -705,6 +843,8 @@
       itemExistente.pesagens.push(pesagem);
       itemExistente.nome = nome;
       itemExistente.tipoUltimo = tipo;
+      itemExistente.qtdUltimo = qtdBandejas;
+      itemExistente.mistaUltimo = mista;
       itemExistente.atualizadoData = t.data;
       itemExistente.atualizadoHora = t.hora;
       // move para o topo, como "recém atualizado"
@@ -716,6 +856,8 @@
         codigo: codigo,
         nome: nome,
         tipoUltimo: tipo,
+        qtdUltimo: qtdBandejas,
+        mistaUltimo: mista,
         criadoData: t.data,
         criadoHora: t.hora,
         atualizadoData: t.data,
@@ -974,6 +1116,24 @@
     if(e.key === "Enter"){ e.preventDefault(); tentarAutoPreencher(); }
   });
   pesoInput.addEventListener("input", updatePreview);
+  qtdInput.addEventListener("input", updatePreview);
+  qtdInput.addEventListener("blur", function(){ qtdInput.value = getQtd(); updatePreview(); });
+  qtdMenos.addEventListener("click", function(){ setQtd(getQtd() - 1); });
+  qtdMais.addEventListener("click", function(){ setQtd(getQtd() + 1); });
+
+  function ligarStepper(input, menos, mais){
+    function ajustar(d){
+      input.value = Math.max(0, Math.min(20, lerQtdMista(input) + d));
+      updatePreview();
+    }
+    menos.addEventListener("click", function(){ ajustar(-1); });
+    mais.addEventListener("click", function(){ ajustar(1); });
+    input.addEventListener("input", updatePreview);
+    input.addEventListener("blur", function(){ input.value = lerQtdMista(input); updatePreview(); });
+  }
+  taraExtraInput.addEventListener("input", updatePreview);
+  ligarStepper(qtdGrandesInput, document.getElementById("qtdGrandesMenos"), document.getElementById("qtdGrandesMais"));
+  ligarStepper(qtdPequenasInput, document.getElementById("qtdPequenasMenos"), document.getElementById("qtdPequenasMais"));
   taraPersonalizadaInput.addEventListener("input", updatePreview);
   bandejaSelect.addEventListener("change", function(){ toggleTaraPersonalizadaField(); updatePreview(); });
 

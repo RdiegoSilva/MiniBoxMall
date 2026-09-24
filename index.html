@@ -73,6 +73,7 @@
             <select id="bandeja">
               <option value="grande">Bandeja grande</option>
               <option value="pequena">Bandeja pequena</option>
+              <option value="mista">Combinar (grande + pequena + personalizada)</option>
               <option value="personalizada">Tara personalizada</option>
               <option value="nenhuma">Sem bandeja (0 kg)</option>
             </select>
@@ -81,6 +82,40 @@
             <label for="peso">Peso na balança</label>
             <input type="number" id="peso" inputmode="numeric" step="1" min="0" placeholder="1000">
             <span class="hint">1kg = 1000 · 1,5kg = 1500</span>
+          </div>
+        </div>
+
+        <div class="field" id="qtdBandejasField">
+          <label for="qtdBandejas">Quantidade de bandejas</label>
+          <div class="qty-stepper">
+            <button type="button" class="qty-btn" id="qtdMenos" aria-label="Diminuir">−</button>
+            <input type="number" id="qtdBandejas" inputmode="numeric" step="1" min="1" max="20" value="1">
+            <button type="button" class="qty-btn" id="qtdMais" aria-label="Aumentar">+</button>
+          </div>
+          <span class="hint">Ex.: 2 = duas bandejas iguais pesadas juntas (tara × 2)</span>
+        </div>
+
+        <div class="grid-2" id="mistaField" style="display:none">
+          <div class="field">
+            <label for="qtdGrandes">Bandejas grandes</label>
+            <div class="qty-stepper">
+              <button type="button" class="qty-btn" id="qtdGrandesMenos" aria-label="Diminuir grandes">−</button>
+              <input type="number" id="qtdGrandes" inputmode="numeric" step="1" min="0" max="20" value="1">
+              <button type="button" class="qty-btn" id="qtdGrandesMais" aria-label="Aumentar grandes">+</button>
+            </div>
+          </div>
+          <div class="field">
+            <label for="qtdPequenas">Bandejas pequenas</label>
+            <div class="qty-stepper">
+              <button type="button" class="qty-btn" id="qtdPequenasMenos" aria-label="Diminuir pequenas">−</button>
+              <input type="number" id="qtdPequenas" inputmode="numeric" step="1" min="0" max="20" value="1">
+              <button type="button" class="qty-btn" id="qtdPequenasMais" aria-label="Aumentar pequenas">+</button>
+            </div>
+          </div>
+          <div class="field" style="grid-column:1/-1">
+            <label for="taraExtra">Tara personalizada extra <span class="unit">gramas</span></label>
+            <input type="text" id="taraExtra" inputmode="decimal" autocomplete="off" placeholder="ex.: 4 ou 4+4+10">
+            <span class="hint">Some quantas quiser com + (4+4+10 = 18g). Deixe vazio se não tiver.</span>
           </div>
         </div>
 

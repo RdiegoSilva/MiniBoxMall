@@ -389,3 +389,13 @@ select{ padding-right:36px; background-position:right 13px center; }
 /* Backup dos códigos */
 .backup-row{ display:flex; gap:10px; }
 .backup-row .btn{ flex:1; white-space:nowrap; padding:0 8px; }
+
+/* ---------- Quantidade de bandejas ---------- */
+.qty-stepper{ display:grid; grid-template-columns:52px 1fr 52px; gap:8px; align-items:stretch; }
+.qty-stepper input{ text-align:center; }
+.qty-btn{
+  min-height:48px; border:1.5px solid var(--line-2); border-radius:12px; background:var(--soft);
+  color:var(--ink); font:700 22px var(--f-body); cursor:pointer; transition:transform .15s var(--ease), background .15s;
+}
+.qty-btn:hover{ background:var(--brand-soft); border-color:var(--brand); }
+.qty-btn:active{ transform:scale(.94); }
