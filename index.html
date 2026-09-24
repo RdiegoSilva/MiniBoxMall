@@ -31,6 +31,7 @@
       <span class="lbl">Líquido total</span>
       <span class="val" id="topbarTotalVal">0,000 <small>kg</small></span>
     </div>
+    <a class="help-link" href="tutorial.html" aria-label="Como usar o PesaCerto">📖 <span>Como usar</span></a>
   </div>
 </header>
 
@@ -114,7 +115,10 @@
           </div>
           <div class="field" style="grid-column:1/-1">
             <label for="taraExtra">Tara personalizada extra <span class="unit">gramas</span></label>
-            <input type="text" id="taraExtra" inputmode="decimal" autocomplete="off" placeholder="ex.: 4 ou 4+4+10">
+            <div class="input-plus">
+              <input type="text" id="taraExtra" inputmode="text" enterkeyhint="done" autocomplete="off" placeholder="ex.: 4 ou 4+4+10">
+              <button type="button" class="btn-plus" id="btnTaraPlus" aria-label="Inserir sinal de mais">+</button>
+            </div>
             <span class="hint">Some quantas quiser com + (4+4+10 = 18g). Deixe vazio se não tiver.</span>
           </div>
         </div>
@@ -193,6 +197,7 @@
     </div>
 
     <p class="footer-note">Dados e códigos ficam salvos apenas neste navegador.</p>
+    <p class="footer-note"><a href="tutorial.html" class="footer-link">📖 Ver tutorial: como usar o PesaCerto</a></p>
   </div>
 
 </main>
@@ -228,5 +233,14 @@
 </div>
 
 <script src="script.js"></script>
+<script>
+document.getElementById("btnTaraPlus").addEventListener("click",function(){
+  var i=document.getElementById("taraExtra");
+  var v=i.value.trim();
+  if(v && !/[+]$/.test(v)) i.value=v+"+";
+  i.focus();
+  i.dispatchEvent(new Event("input",{bubbles:true}));
+});
+</script>
 </body>
 </html>

@@ -399,3 +399,12 @@ select{ padding-right:36px; background-position:right 13px center; }
 }
 .qty-btn:hover{ background:var(--brand-soft); border-color:var(--brand); }
 .qty-btn:active{ transform:scale(.94); }
+
+/* Tutorial link + botão "+" da tara extra */
+.help-link{ display:inline-flex; align-items:center; gap:6px; flex-shrink:0; padding:8px 12px; border-radius:999px; font:600 13px var(--f-body,inherit); text-decoration:none; color:var(--brand-2); background:var(--brand-soft,rgba(34,197,94,.12)); border:1px solid var(--brand-line,rgba(34,197,94,.3)); }
+@media (max-width:420px){ .help-link span{ display:none; } .help-link{ padding:8px 10px; } }
+.footer-link{ color:var(--brand-2); font-weight:600; text-decoration:none; }
+.input-plus{ display:flex; gap:8px; }
+.input-plus input{ flex:1; min-width:0; }
+.btn-plus{ width:52px; flex-shrink:0; border-radius:12px; border:1.5px solid var(--line); background:var(--brand-soft,#e5f5ea); color:var(--brand-2); font:700 24px/1 var(--f-mono,monospace); cursor:pointer; }
+.btn-plus:active{ transform:scale(.96); }
