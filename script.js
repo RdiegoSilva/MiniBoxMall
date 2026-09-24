@@ -523,6 +523,92 @@
     taraPequenaInput.value = taras.pequena;
   }
 
+
+  // ---------- Extras: feedback, desfazer, histórico do código, aviso de peso ----------
+  var histTag = document.getElementById("histTag");
+  var undoBar = document.getElementById("undoBar");
+  var undoBtn = document.getElementById("undoBtn");
+  var avisoModal = document.getElementById("avisoModal");
+  var avisoMsg = document.getElementById("avisoMsg");
+  var avisoCorrigir = document.getElementById("avisoCorrigir");
+  var avisoContinuar = document.getElementById("avisoContinuar");
+  var pesagemConfirmada = false;
+  var undoSnap = null, undoTimer = null, avisoAcao = null;
+
+  function fx(nome){ try{ if(window.PesaFX && window.PesaFX[nome]) window.PesaFX[nome](); }catch(e){} }
+
+  function mostrarDesfazer(snap){
+    undoSnap = snap;
+    undoBar.hidden = false;
+    undoBar.classList.remove("run"); void undoBar.offsetWidth; undoBar.classList.add("run");
+    clearTimeout(undoTimer);
+    undoTimer = setTimeout(esconderDesfazer, 8000);
+  }
+  function esconderDesfazer(){
+    clearTimeout(undoTimer);
+    undoSnap = null;
+    if(undoBar) undoBar.hidden = true;
+  }
+  undoBtn.addEventListener("click", function(){
+    if(!undoSnap) return;
+    var snap = undoSnap;
+    lista = snap;
+    safeSet(LISTA_KEY, lista);
+    renderLista();
+    toast("↩️ Pesagem desfeita");
+  });
+
+  function atualizarHist(codigo){
+    histTag.hidden = true;
+    if(!codigo) return;
+    var item = lista.find(function(it){ return it.codigo && it.codigo.toLowerCase() === codigo.toLowerCase(); });
+    if(!item || !item.pesagens.length) return;
+    var hoje = agora().data, soma = 0, n = 0;
+    item.pesagens.forEach(function(p){ if(p.data === hoje){ soma += p.pesoBruto - p.tara; n++; } });
+    var u = item.pesagens[item.pesagens.length - 1];
+    histTag.innerHTML = "🕘 Última: <b>" + fmt(u.pesoBruto - u.tara) + " kg</b> às " + u.hora +
+      " &nbsp;·&nbsp; Hoje: <b>" + n + "</b> " + (n === 1 ? "pesagem" : "pesagens") + ", <b>" + fmt(soma) + " kg</b> líquido";
+    histTag.hidden = false;
+  }
+
+  function analisarPeso(codigo, liq){
+    if(liq <= 0) return "O líquido deu " + fmt(liq) + " kg: o peso está menor que a bandeja. Confira se digitou em gramas (1,5 kg = 1500).";
+    if(liq > 40) return "Líquido de " + fmt(liq) + " kg é muito alto para uma pesagem. Pode ter sobrado um zero, ou o peso foi digitado errado.";
+    if(codigo){
+      var item = lista.find(function(it){ return it.codigo && it.codigo.toLowerCase() === codigo.toLowerCase(); });
+      if(item && item.pesagens.length){
+        var soma = 0;
+        item.pesagens.forEach(function(p){ soma += p.pesoBruto - p.tara; });
+        var media = soma / item.pesagens.length;
+        if(liq > media * 4 && liq - media > 2) return "Esta pesagem (" + fmt(liq) + " kg) é mais de 4× a média deste código (" + fmt(media) + " kg). Confira o peso digitado.";
+        if(media > 1 && liq < media / 5) return "Esta pesagem (" + fmt(liq) + " kg) é bem menor que a média deste código (" + fmt(media) + " kg). Faltou algum zero?";
+      }
+    }
+    return "";
+  }
+  function mostrarAviso(msg, aoContinuar){
+    avisoMsg.textContent = msg;
+    avisoAcao = aoContinuar;
+    avisoModal.hidden = false;
+    fx("erro");
+    avisoCorrigir.focus();
+  }
+  function fecharAviso(){ avisoModal.hidden = true; avisoAcao = null; }
+  avisoCorrigir.addEventListener("click", function(){ fecharAviso(); pesoInput.focus(); pesoInput.select(); });
+  avisoContinuar.addEventListener("click", function(){ var f = avisoAcao; fecharAviso(); if(f) f(); });
+  avisoModal.addEventListener("click", function(e){ if(e.target === avisoModal) fecharAviso(); });
+
+  function logoParaPdf(){
+    try{
+      var img = document.querySelector(".logo-box img");
+      if(!img || !img.naturalWidth || img.style.display === "none") return null;
+      var c = document.createElement("canvas");
+      c.width = img.naturalWidth; c.height = img.naturalHeight;
+      c.getContext("2d").drawImage(img, 0, 0);
+      return { url: c.toDataURL("image/png"), w: c.width, h: c.height };
+    }catch(e){ return null; }
+  }
+
   function tick(el){ el.classList.remove("tick"); void el.offsetWidth; el.classList.add("tick"); }
 
   function updatePreview(){
@@ -545,6 +631,7 @@
       notfoundTag.classList.remove("show");
       return;
     }
+    atualizarHist(codigo);
     var salvo = codigos[codigo];
     if(salvo){
       nomeInput.value = salvo.nome || "";
@@ -573,6 +660,7 @@
     var codigo = codigoInput.value.trim();
     foundTag.classList.remove("show");
     notfoundTag.classList.remove("show");
+    atualizarHist("");
     if(!codigo){ foundTag.classList.remove("checking"); return; }
     foundTagTxt.textContent = "Verificando código…";
     foundTag.classList.add("checking");
@@ -615,6 +703,7 @@
     qtdGrandesInput.value = 1;
     qtdPequenasInput.value = 1;
     taraExtraInput.value = "";
+    atualizarHist("");
     foundTag.classList.remove("show", "checking");
     notfoundTag.classList.remove("show");
     toggleTaraPersonalizadaField();
@@ -679,6 +768,7 @@
   }
 
   function renderLista(idxDestaque){
+    if(idxDestaque === undefined) esconderDesfazer();
     listaEl.innerHTML = "";
 
     if(lista.length === 0){
@@ -693,6 +783,8 @@
         var ticket = document.createElement("div");
         ticket.className = "ticket";
         if(idx === idxDestaque){ ticket.classList.add("entering"); }
+        if(item.status === "ok") ticket.classList.add("status-ok");
+        else if(item.status === "atencao") ticket.classList.add("status-atencao");
 
         var head = document.createElement("div");
         head.className = "ticket-head";
@@ -723,6 +815,21 @@
 
         var actions = document.createElement("div");
         actions.className = "ticket-actions";
+
+        [["ok", "✔️", "Marcar como conferido"], ["atencao", "⚠️", "Marcar como atenção"]].forEach(function(st){
+          var b = document.createElement("button");
+          b.type = "button";
+          b.className = "btn btn-icon-round st-btn st-" + st[0] + (item.status === st[0] ? " on" : "");
+          b.title = st[2];
+          b.setAttribute("aria-pressed", String(item.status === st[0]));
+          b.textContent = st[1];
+          b.addEventListener("click", function(){
+            item.status = (item.status === st[0]) ? "" : st[0];
+            safeSet(LISTA_KEY, lista);
+            renderLista();
+          });
+          actions.appendChild(b);
+        });
 
         var editBtn = document.createElement("button");
         editBtn.className = "btn btn-icon-round";
@@ -829,6 +936,14 @@
     var qtdBandejas = getQtd();
     var mista = (tipo === "mista") ? getMista() : null;
     var tara = taraTotal(tipo);
+    var aviso = pesagemConfirmada ? "" : analisarPeso(codigo, peso - tara);
+    if(aviso){
+      mostrarAviso(aviso, function(){ pesagemConfirmada = true; btnAdd.click(); });
+      return;
+    }
+    var marcarAtencao = pesagemConfirmada;
+    pesagemConfirmada = false;
+    var snapDesfazer = deepCopy(lista);
     var t = agora();
     var pesagem = { pesoBruto: peso, tara: tara, tipo: tipo, qtdBandejas: qtdBandejas, mista: mista, data: t.data, hora: t.hora, horarioIso: t.iso };
 
@@ -867,11 +982,15 @@
       idxFinal = 0;
     }
 
+    lista[0].status = marcarAtencao ? "atencao" : "";
+    if(marcarAtencao) pesagem.aviso = true;
     salvarCodigo(codigo, nome, tipo);
     safeSet(LISTA_KEY, lista);
     renderLista(idxFinal);
     limparFormulario();
-    toast("✅ Pesagem adicionada");
+    toast(marcarAtencao ? "⚠️ Adicionada e marcada para conferir" : "✅ Pesagem adicionada");
+    fx("ok");
+    mostrarDesfazer(snapDesfazer);
     codigoInput.focus();
   });
 
@@ -917,6 +1036,8 @@
 
         var titulo = (item.codigo ? "🏷️ " + item.codigo + " — " : "🏷️ ") + item.nome;
         linhas.push("");
+        if(item.status === "ok") titulo += "  ✔️ conferido";
+        else if(item.status === "atencao") titulo += "  ⚠️ ATENÇÃO";
         linhas.push(titulo);
         linhas.push("   ⚖️ " + ag.qtd + (ag.qtd === 1 ? " pesagem" : " pesagens") + " · última às " + item.atualizadoHora);
         linhas.push("   Bruto " + fmt(ag.bruto) + " kg  −  Tara " + fmt(ag.tara) + " kg");
@@ -975,17 +1096,35 @@
     var pageWidth = doc.internal.pageSize.getWidth();
     var margin = 40;
 
-    doc.setFillColor(23, 138, 76);
+    doc.setFillColor(17, 24, 20);
     doc.rect(0, 0, pageWidth, 86, "F");
+    // linha vermelha em degradê (escuro > vivo > escuro)
+    var seg = 90;
+    for(var i = 0; i < seg; i++){
+      var k = 1 - Math.abs(2 * (i / (seg - 1)) - 1);
+      doc.setFillColor(Math.round(127 + 128 * k), Math.round(29 + 61 * k), Math.round(29 + 48 * k));
+      doc.rect(i * pageWidth / seg, 86, pageWidth / seg + 0.6, 6, "F");
+    }
+    var logo = logoParaPdf();
+    var textoX = margin;
+    if(logo){
+      doc.setFillColor(255, 255, 255);
+      doc.roundedRect(margin - 4, 13, 64, 60, 9, 9, "F");
+      var esc = Math.min(56 / logo.w, 52 / logo.h);
+      doc.addImage(logo.url, "PNG", margin - 4 + (64 - logo.w * esc) / 2, 13 + (60 - logo.h * esc) / 2, logo.w * esc, logo.h * esc);
+      textoX = margin + 76;
+    }
     doc.setTextColor(255, 255, 255);
     doc.setFont("helvetica", "bold");
     doc.setFontSize(20);
-    doc.text("MINI BOX MALL AÇOUGUE", margin, 40);
+    doc.text("MINI BOX MALL AÇOUGUE", textoX, 40);
     doc.setFontSize(13);
-    doc.text("PESACERTO — Resultado da pesagem", margin, 60);
+    doc.setTextColor(255, 150, 140);
+    doc.text("PESACERTO — Resultado da pesagem", textoX, 60);
     doc.setFont("helvetica", "normal");
     doc.setFontSize(10);
-    doc.text("Fechamento: " + t.data + " às " + t.hora, margin, 76);
+    doc.setTextColor(200, 212, 205);
+    doc.text("Fechamento: " + t.data + " às " + t.hora, textoX, 76);
 
     var somaBruto = 0, somaLiquido = 0;
     var linhas = lista.map(function(item){
@@ -1008,16 +1147,23 @@
       doc.text("Nenhuma pesagem registrada.", margin, 120);
     } else {
       doc.autoTable({
-        startY: 104,
+        startY: 120,
         margin: { left: margin, right: margin },
         head: [["Código", "Item", "Pesagens", "Bruto", "Tara", "Líquido"]],
         body: linhas,
         foot: [["", "TOTAL GERAL", String(lista.length), fmt(somaBruto) + " kg", "", fmt(somaLiquido) + " kg"]],
         theme: "grid",
         styles: { font: "helvetica", fontSize: 10, cellPadding: 6, textColor: [20, 23, 28], lineColor: [226, 229, 235], lineWidth: 0.6 },
-        headStyles: { fillColor: [23, 138, 76], textColor: [255, 255, 255], fontStyle: "bold" },
-        footStyles: { fillColor: [228, 246, 238], textColor: [11, 120, 82], fontStyle: "bold" },
+        headStyles: { fillColor: [153, 27, 27], textColor: [255, 255, 255], fontStyle: "bold" },
+        footStyles: { fillColor: [254, 226, 226], textColor: [153, 27, 27], fontStyle: "bold" },
         alternateRowStyles: { fillColor: [244, 245, 248] },
+        didParseCell: function(d){
+          if(d.section === "body" && lista[d.row.index]){
+            var st = lista[d.row.index].status;
+            if(st === "atencao"){ d.cell.styles.textColor = [185, 28, 28]; d.cell.styles.fontStyle = "bold"; }
+            else if(st === "ok"){ d.cell.styles.textColor = [21, 128, 61]; }
+          }
+        },
         columnStyles: {
           0: { cellWidth: 60 },
           2: { cellWidth: 55, halign: "center" },
@@ -1028,6 +1174,10 @@
       });
     }
 
+    var alt = doc.internal.pageSize.getHeight();
+    doc.setDrawColor(220, 38, 38);
+    doc.setLineWidth(2);
+    doc.line(margin, alt - 38, pageWidth - margin, alt - 38);
     doc.setTextColor(102, 110, 122);
     doc.setFontSize(9);
     doc.text("Documento gerado automaticamente pelo PesaCerto — dados armazenados apenas no navegador do balcão.", margin, doc.internal.pageSize.getHeight() - 24);
@@ -1044,6 +1194,12 @@
     if(gerarPDF()) toast("📄 PDF baixado!");
   });
 
+  var btnWhats = document.getElementById("btnWhats");
+  btnWhats.addEventListener("click", function(){
+    if(lista.length === 0){ toast("⚠️ Não há pesagens para enviar"); return; }
+    window.open("https://wa.me/?text=" + encodeURIComponent(montarTextoResultado()), "_blank");
+  });
+
   btnEncerrar.addEventListener("click", function(){
     if(lista.length === 0){
       window.alert("Não há pesagens para encerrar.");
@@ -1051,7 +1207,7 @@
     }
     // Encerrar apenas baixa o PDF: sem senha e sem limpar a lista.
     // A senha continua sendo pedida somente para excluir/remover itens.
-    if(gerarPDF()) toast("✅ Pesagem encerrada e PDF baixado!");
+    if(gerarPDF()){ toast("✅ Pesagem encerrada e PDF baixado!"); fx("festa"); }
   });
 
   // ---------- Backup e sincronização dos códigos ----------

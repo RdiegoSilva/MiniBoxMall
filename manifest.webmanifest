@@ -1,0 +1,17 @@
+{
+  "name": "PesaCerto — Mini Box Mall Açougue",
+  "short_name": "PesaCerto",
+  "description": "Peso líquido e soma automática por código.",
+  "lang": "pt-BR",
+  "start_url": "./index.html",
+  "scope": "./",
+  "display": "standalone",
+  "orientation": "portrait",
+  "background_color": "#0c1611",
+  "theme_color": "#b91c1c",
+  "icons": [
+    { "src": "icon-192.png", "sizes": "192x192", "type": "image/png", "purpose": "any" },
+    { "src": "icon-512.png", "sizes": "512x512", "type": "image/png", "purpose": "any" },
+    { "src": "icon-512.png", "sizes": "512x512", "type": "image/png", "purpose": "maskable" }
+  ]
+}
