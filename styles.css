@@ -385,3 +385,7 @@ select{ padding-right:36px; background-position:right 13px center; }
 }
 /* Bandeja / Peso: empilha em celulares estreitos para o texto do seletor não cortar */
 @media (max-width:419px){ .card > .subsection:nth-of-type(2) .grid-2{ grid-template-columns:1fr; } }
+
+/* Backup dos códigos */
+.backup-row{ display:flex; gap:10px; }
+.backup-row .btn{ flex:1; white-space:nowrap; padding:0 8px; }

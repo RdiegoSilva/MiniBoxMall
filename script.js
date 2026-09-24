@@ -912,6 +912,63 @@
     if(gerarPDF()) toast("✅ Pesagem encerrada e PDF baixado!");
   });
 
+  // ---------- Backup e sincronização dos códigos ----------
+  // Junta códigos de uma origem externa; só sobrescreve os existentes se "sobrescrever" for true.
+  function mesclarCodigos(origem, sobrescrever){
+    var n = 0;
+    if(!origem || typeof origem !== "object") return 0;
+    Object.keys(origem).forEach(function(cod){
+      var v = origem[cod];
+      if(!v || typeof v !== "object" || !v.nome) return;
+      if(sobrescrever || !codigos[cod]){ codigos[cod] = v; n++; }
+    });
+    if(n) safeSet(CODIGOS_KEY, codigos);
+    return n;
+  }
+
+  // 1) Se existir um "codigos.json" na mesma pasta do site (ex.: no GitHub), carrega sozinho em qualquer aparelho.
+  try{
+    fetch("codigos.json", { cache: "no-store" })
+      .then(function(r){ return r.ok ? r.json() : null; })
+      .then(function(dados){
+        if(dados && mesclarCodigos(dados, false) && codigoInput.value.trim()) tentarAutoPreencher();
+      })
+      .catch(function(){});
+  }catch(e){}
+
+  // 2) Botões: salvar todos os códigos em um arquivo / carregar de um arquivo.
+  var btnExportCodigos = document.getElementById("btnExportCodigos");
+  var btnImportCodigos = document.getElementById("btnImportCodigos");
+  var fileImportCodigos = document.getElementById("fileImportCodigos");
+
+  if(btnExportCodigos){
+    btnExportCodigos.addEventListener("click", function(){
+      var blob = new Blob([JSON.stringify(codigos, null, 2)], { type: "application/json" });
+      var a = document.createElement("a");
+      a.href = URL.createObjectURL(blob);
+      a.download = "codigos.json";
+      document.body.appendChild(a); a.click(); a.remove();
+      setTimeout(function(){ URL.revokeObjectURL(a.href); }, 1000);
+      toast("⬇️ " + Object.keys(codigos).length + " códigos salvos em codigos.json");
+    });
+  }
+  if(btnImportCodigos && fileImportCodigos){
+    btnImportCodigos.addEventListener("click", function(){ fileImportCodigos.click(); });
+    fileImportCodigos.addEventListener("change", function(){
+      var f = fileImportCodigos.files && fileImportCodigos.files[0];
+      if(!f) return;
+      var rd = new FileReader();
+      rd.onload = function(){
+        try{
+          var n = mesclarCodigos(JSON.parse(rd.result), true);
+          toast(n ? "⬆️ " + n + " códigos carregados" : "⚠️ Nenhum código válido no arquivo");
+        }catch(e){ toast("⚠️ Arquivo inválido"); }
+        fileImportCodigos.value = "";
+      };
+      rd.readAsText(f);
+    });
+  }
+
   codigoInput.addEventListener("blur", tentarAutoPreencher);
   codigoInput.addEventListener("keydown", function(e){
     if(e.key === "Enter"){ e.preventDefault(); tentarAutoPreencher(); }
