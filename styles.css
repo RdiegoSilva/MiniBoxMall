@@ -702,3 +702,82 @@ html.theme-anim *,html.theme-anim *::before,html.theme-anim *::after{transition-
 :root[data-theme="dark"] .recent-table td:first-child{color:#edf7f3;}
 :root[data-theme="dark"] .recent-green{color:#4be095!important;}
 :root[data-theme="dark"] .recent-link{color:#4be095;}
+
+/* ===================== AJUSTE DO TOPO NO CELULAR ===================== */
+@media (max-width:759px){
+  .topbar-inner{
+    display:grid;
+    grid-template-columns:1fr;
+    gap:8px;
+    padding:10px 14px 9px;
+    min-height:0;
+  }
+
+  .brand{
+    width:100%;
+    min-width:0;
+    gap:10px;
+    justify-content:flex-start;
+  }
+
+  .logo-box.logo-mark,
+  .logo-mark svg{
+    width:48px;
+    height:48px;
+  }
+
+  .brand-text{ min-width:0; }
+  .brand-title{
+    font-size:22px;
+    line-height:1;
+    letter-spacing:-.7px;
+  }
+  .brand-sub{
+    font-size:10.5px;
+    margin-top:3px;
+    max-width:190px;
+  }
+
+  .top-actions{
+    width:100%;
+    margin-left:0;
+    justify-content:flex-end;
+    gap:7px;
+    min-width:0;
+  }
+
+  .top-actions .help-link{
+    display:flex;
+    order:3;
+    margin-left:auto;
+    padding:7px 9px;
+    font-size:12px;
+    white-space:nowrap;
+  }
+
+  .top-actions .icon-btn{
+    order:1;
+    width:36px;
+    height:36px;
+    flex:none;
+  }
+
+  .top-actions .theme-switch{
+    order:2;
+    flex:none;
+  }
+
+  .theme-switch button{
+    min-width:39px;
+    padding:6px 9px;
+  }
+}
+
+@media (max-width:380px){
+  .topbar-inner{padding-left:11px;padding-right:11px;}
+  .brand-title{font-size:21px;}
+  .brand-sub{max-width:170px;}
+  .top-actions .help-link{font-size:11px;padding-left:7px;padding-right:7px;}
+  .theme-switch button{min-width:36px;padding-left:7px;padding-right:7px;}
+  .top-actions .icon-btn{width:34px;height:34px;}
+}
