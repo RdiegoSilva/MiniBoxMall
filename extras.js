@@ -1,7 +1,7 @@
-/* PesaCerto — preferências, som/vibração, tela ligada, modo balcão, festa e PWA */
+/* PesaCerto — preferências, som/vibração, tela ligada, festa e PWA */
 (function(){
   var KEY = "pesacerto_prefs";
-  var prefs = { som:true, tela:true, balcao:false };
+  var prefs = { som:true, tela:true };
   try{ var p = JSON.parse(localStorage.getItem(KEY)||"{}"); for(var k in p) prefs[k] = p[k]; }catch(e){}
   function salvar(){ try{ localStorage.setItem(KEY, JSON.stringify(prefs)); }catch(e){} }
 
@@ -55,9 +55,8 @@
   document.addEventListener("visibilitychange", function(){ if(document.visibilityState === "visible") wake(); });
   document.addEventListener("click", function once(){ wake(); document.removeEventListener("click", once); });
 
-  /* ---------- Modo balcão ---------- */
+  /* ---------- Preferências aplicadas ---------- */
   function aplicar(){
-    document.documentElement.classList.toggle("balcao", !!prefs.balcao);
     prefs.tela ? wake() : unwake();
   }
   aplicar();
