@@ -6,7 +6,7 @@
 <title>PesaCerto</title>
 <link rel="icon" href="logo.png">
 <link rel="manifest" href="manifest.webmanifest">
-<meta name="theme-color" content="#b91c1c">
+<meta name="theme-color" content="#07372f">
 <meta name="mobile-web-app-capable" content="yes">
 <meta name="apple-mobile-web-app-capable" content="yes">
 <meta name="apple-mobile-web-app-title" content="PesaCerto">
@@ -15,7 +15,7 @@
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
 <link href="https://fonts.googleapis.com/css2?family=Sora:wght@600;700;800&family=Inter:wght@400;500;600;700&family=IBM+Plex+Mono:wght@500;700&display=swap" rel="stylesheet">
-<script src="theme.js"></script>
+<script src="theme.js?v=3"></script>
 <link rel="stylesheet" href="styles.css">
 <script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf/2.5.1/jspdf.umd.min.js"></script>
 <script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf-autotable/3.8.2/jspdf.plugin.autotable.min.js"></script>
@@ -25,10 +25,8 @@
 <header class="topbar">
   <div class="topbar-inner">
     <div class="brand">
-      <div class="logo-box">
-        <!-- Coloque seu arquivo "logo.png" nesta mesma pasta -->
-        <img src="logo.png" alt="Logo Mini Box Mall Açougue" onerror="this.style.display='none'; this.nextElementSibling.style.display='flex';">
-        <div class="logo-fallback">MB</div>
+      <div class="logo-box logo-mark" aria-hidden="true">
+        <svg viewBox="0 0 64 64" role="img"><path d="M15 10h34l-3 7H18z" fill="#22c979"/><path d="M22 18h20v26H22z" fill="none" stroke="#fff" stroke-width="4" stroke-linejoin="round"/><path d="M17 45h30" stroke="#fff" stroke-width="4" stroke-linecap="round"/><circle cx="32" cy="27" r="5" fill="none" stroke="#fff" stroke-width="3"/><path d="M32 27v-7" stroke="#fff" stroke-width="3" stroke-linecap="round"/></svg>
       </div>
       <div class="brand-text">
         <span class="brand-title">PesaCerto</span>
@@ -47,8 +45,18 @@
   </div>
 </header>
 
+<aside class="side-nav" aria-label="Menu principal">
+  <button class="side-nav-btn active" data-tab-target="pesar" type="button"><span class="side-ico scale-ico"><svg viewBox="0 0 24 24"><path d="M6 4h12M8 4l-2 4h12l-2-4M8 8v9a4 4 0 0 0 8 0V8M12 9v4"/></svg></span><span>Pesar</span></button>
+  <button class="side-nav-btn" data-tab-target="lista" type="button"><span class="side-ico"><svg viewBox="0 0 24 24"><path d="M8 6h12M8 12h12M8 18h12"/><circle cx="4" cy="6" r="1"/><circle cx="4" cy="12" r="1"/><circle cx="4" cy="18" r="1"/></svg></span><span>Lista</span></button>
+  <button class="side-nav-btn" data-tab-target="tara" type="button"><span class="side-ico"><svg viewBox="0 0 24 24"><path d="M5 8h14l-2 11H7zM9 8l3-5 3 5M9 14h6"/></svg></span><span>Tara</span></button>
+  <button class="side-nav-btn side-action" data-side-action="config" type="button"><span class="side-ico"><svg viewBox="0 0 24 24"><path d="M12 3l1.2 2.2 2.4.6.5 2.4 2 1.3-1 2.2 1 2.2-2 1.3-.5 2.4-2.4.6L12 21l-1.2-2.2-2.4-.6-.5-2.4-2-1.3 1-2.2-1-2.2 2-1.3.5-2.4 2.4-.6z"/><circle cx="12" cy="12" r="3"/></svg></span><span>Configurações</span></button>
+  <button class="side-nav-btn side-action" data-side-action="tutorial" type="button"><span class="side-ico"><svg viewBox="0 0 24 24"><circle cx="12" cy="12" r="9"/><path d="M9.5 9a2.5 2.5 0 1 1 4.3 1.8c-1.2 1.1-1.8 1.5-1.8 3"/><circle cx="12" cy="17" r=".8" fill="currentColor" stroke="none"/></svg></span><span>Como usar</span></button>
+</aside>
+
 <main class="content">
 
+  <div class="dashboard-grid">
+    <div class="dashboard-main">
   <div class="tab-panel panel-pesar active" data-tab="pesar">
     <div class="panel-title">
       <h2>Nova pesagem</h2>
@@ -203,15 +211,50 @@
     <button class="btn btn-primary btn-lg" id="btnEncerrar">
       <span class="btn-ico">✅</span> Encerrar pesagem (baixar PDF)
     </button>
-
-    <div class="backup-row">
-      <button type="button" class="btn btn-outline-slate btn-sm" id="btnExportCodigos">⬇️ Salvar códigos</button>
-      <button type="button" class="btn btn-outline-slate btn-sm" id="btnImportCodigos">⬆️ Carregar códigos</button>
-      <input type="file" id="fileImportCodigos" accept=".json,application/json" hidden>
+<p class="footer-note">Dados e códigos ficam salvos apenas neste navegador.</p>
+    <p class="footer-note"><a href="tutorial.html" class="footer-link">📖 Ver tutorial: como usar o PesaCerto</a></p>
+  </div>
+      <section class="side-card recent-card recent-main-card">
+        <div class="recent-head"><h3><span class="section-svg">◷</span>Últimas pesagens</h3><button type="button" class="recent-link" data-tab-target="lista">Ver todas →</button></div>
+        <div class="recent-table-wrap">
+          <table class="recent-table"><thead><tr><th>Nome da carne</th><th>Peso bruto</th><th>Tara</th><th>Peso líquido</th><th>Horário</th></tr></thead><tbody id="recentRows"></tbody></table>
+        </div>
+      </section>
     </div>
 
-    <p class="footer-note">Dados e códigos ficam salvos apenas neste navegador.</p>
-    <p class="footer-note"><a href="tutorial.html" class="footer-link">📖 Ver tutorial: como usar o PesaCerto</a></p>
+    <aside class="dashboard-side" aria-label="Resumo da lista">
+      <section class="side-card summary-card">
+        <h3><span class="section-svg"><svg viewBox="0 0 24 24"><path d="M8 5h11v14H8z"/><path d="M4 7h2M4 12h2M4 17h2"/></svg></span>Resumo da lista</h3>
+        <div class="summary-grid">
+          <div class="summary-box"><span>Itens</span><b id="summaryItems">0</b></div>
+          <div class="summary-box"><span>Bruto</span><b id="summaryBruto">0,000 kg</b></div>
+          <div class="summary-box green"><span>Líquido</span><b id="summaryLiquido">0,000 kg</b></div>
+          <div class="summary-box green strong"><span>Líquido total</span><b id="summaryTotal">0,000 kg</b></div>
+        </div>
+      </section>
+
+      <section class="side-card quick-card">
+        <h3><span class="section-svg"><svg viewBox="0 0 24 24"><path d="M8 8h11v11H8z"/><path d="M5 16H4V5h11v1"/></svg></span>Ações rápidas</h3>
+        <div class="quick-grid">
+          <button type="button" data-quick="copy"><span>▣</span>Copiar resultado</button>
+          <button type="button" data-quick="pdf"><span>▤</span>Gerar PDF</button>
+          <button type="button" data-quick="whats"><span>◉</span>WhatsApp</button>
+          <button type="button" data-quick="encerrar"><span>✓</span>Encerrar lista</button>
+        </div>
+      </section>
+
+      <section class="side-card highlights-card">
+        <h3><span class="section-svg">✦</span>Destaques</h3>
+        <ul>
+          <li>Calcula o peso líquido automaticamente</li>
+          <li>Desconta a tara da bandeja</li>
+          <li>Soma várias pesagens do mesmo código</li>
+          <li>Organiza suas pesagens por código</li>
+          <li>Ajuda na conferência do inventário/rotativo</li>
+        </ul>
+      </section>
+
+    </aside>
   </div>
 
 </main>
@@ -224,10 +267,10 @@
   </div>
 </div>
 
-<nav class="tabbar" aria-label="Navegação">
-  <button class="tabbar-btn active" data-tab-target="pesar" type="button"><span class="ico">⚖️</span><span>Pesar</span></button>
-  <button class="tabbar-btn" data-tab-target="lista" type="button"><span class="ico">📋</span><span>Lista</span></button>
-  <button class="tabbar-btn" data-tab-target="tara" type="button"><span class="ico">⚙️</span><span>Tara</span></button>
+<nav class="tabbar" aria-label="Navegação móvel">
+  <button class="tabbar-btn active" data-tab-target="pesar" type="button"><span class="ico">⚖</span><span>Pesar</span></button>
+  <button class="tabbar-btn" data-tab-target="lista" type="button"><span class="ico">☷</span><span>Lista</span></button>
+  <button class="tabbar-btn" data-tab-target="tara" type="button"><span class="ico">♜</span><span>Tara</span></button>
 </nav>
 
 <div class="toast" id="toast" role="status" aria-live="polite"></div>
@@ -275,6 +318,62 @@
 
 <script src="script.js"></script>
 <script src="extras.js"></script>
+<script>
+(function(){
+  function moneyKg(v){ return Number(v||0).toFixed(3).replace('.',',')+' kg'; }
+  function pesoKg(v){
+    var n=Number(v);
+    if(!isFinite(n)) return 0;
+    /* Registros antigos do PesaCerto guardavam gramas inteiras (ex.: 34 e 6).
+       A versão atual guarda kg (ex.: 0.034 e 0.006). Converte somente o
+       formato antigo inteiro para não misturar unidades no dashboard. */
+    if(Math.abs(n)>=1 && Math.floor(n)===n && Math.abs(n)<=9999) return n/1000;
+    return n;
+  }
+  function refreshDashboard(){
+    try{
+      var arr=JSON.parse(localStorage.getItem('pesacerto_lista_v2')||'[]');
+      if(!Array.isArray(arr)) arr=[];
+      var bruto=0, liquido=0, rows=[];
+      arr.forEach(function(item){
+        var pes=item.pesagens||[];
+        pes.forEach(function(p){
+          var brutoKg=pesoKg(p.pesoBruto), taraKg=pesoKg(p.tara);
+          bruto+=brutoKg;
+          liquido+=brutoKg-taraKg;
+        });
+        pes.slice().reverse().forEach(function(p){ rows.push({item:item,p:p}); });
+      });
+      rows.sort(function(a,b){return new Date(b.p.horarioIso || 0)-new Date(a.p.horarioIso || 0);});
+      var si=document.getElementById('summaryItems'), sb=document.getElementById('summaryBruto'), sl=document.getElementById('summaryLiquido'), st=document.getElementById('summaryTotal');
+      if(si) si.textContent=arr.length; if(sb) sb.textContent=moneyKg(bruto); if(sl) sl.textContent=moneyKg(liquido); if(st) st.textContent=moneyKg(liquido);
+      var body=document.getElementById('recentRows'); if(!body) return; body.innerHTML='';
+      rows.slice(0,4).forEach(function(r){
+        var p=r.p, taraKg=pesoKg(p.tara), brutoKg=pesoKg(p.pesoBruto), liqKg=brutoKg-taraKg;
+        var hora = p.hora || '—';
+        if(!p.hora && p.horarioIso){ var d=new Date(p.horarioIso); if(!isNaN(d)) hora=d.toLocaleTimeString('pt-BR',{hour:'2-digit',minute:'2-digit'}); }
+        var tr=document.createElement('tr');
+        tr.innerHTML='<td>'+String(r.item.nome||'—')+'</td><td>'+moneyKg(brutoKg)+'</td><td>'+moneyKg(taraKg)+'</td><td class="recent-green">'+moneyKg(liqKg)+'</td><td>'+hora+'</td>'; body.appendChild(tr);
+      });
+      if(!rows.length) body.innerHTML='<tr><td colspan="5" class="recent-empty">Nenhuma pesagem registrada.</td></tr>';
+    }catch(e){}
+  }
+  document.addEventListener('click',function(e){
+    var q=e.target.closest('[data-quick]');
+    if(q){ var map={copy:'btnCopy',pdf:'btnPdf',whats:'btnWhats',encerrar:'btnEncerrar'}; var b=document.getElementById(map[q.dataset.quick]); if(b) b.click(); }
+    var a=e.target.closest('[data-side-action]');
+    if(a){
+      if(a.dataset.sideAction==='config'){ var b=document.getElementById('btnSettings'); if(b)b.click(); }
+      if(a.dataset.sideAction==='tutorial'){ location.href='tutorial.html'; }
+    }
+    var t=e.target.closest('[data-tab-target]');
+    if(t && !t.classList.contains('tabbar-btn')){ var b=document.querySelector('.tabbar-btn[data-tab-target="'+t.dataset.tabTarget+'"]'); if(b)b.click(); }
+  });
+  window.addEventListener('storage',refreshDashboard);
+  setInterval(refreshDashboard,1200);
+  refreshDashboard();
+})();
+</script>
 <script>
 document.getElementById("btnTaraPlus").addEventListener("click",function(){
   var i=document.getElementById("taraExtra");

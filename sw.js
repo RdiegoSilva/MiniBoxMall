@@ -1,5 +1,5 @@
 /* PesaCerto — funciona sem internet. Mude a versão abaixo quando publicar mudanças grandes. */
-var V = "pesacerto-v2";
+var V = "pesacerto-v3";
 var LOCAL = ["./","index.html","styles.css","script.js","extras.js","theme.js","tutorial.html","tutorial.css","tutorial.js","manifest.webmanifest","logo.png","icon-192.png","icon-512.png"];
 var CDN = ["https://cdnjs.cloudflare.com/ajax/libs/jspdf/2.5.1/jspdf.umd.min.js","https://cdnjs.cloudflare.com/ajax/libs/jspdf-autotable/3.8.2/jspdf.plugin.autotable.min.js"];
 
