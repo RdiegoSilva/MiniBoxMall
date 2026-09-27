@@ -61,15 +61,7 @@
   }
   aplicar();
 
-  /* ---------- Painel de configurações ---------- */
-  var painel = document.getElementById("settingsPanel"), fundo = document.getElementById("settingsBackdrop"), btn = document.getElementById("btnSettings");
-  function abrir(v){
-    painel.hidden = fundo.hidden = !v;
-    btn.setAttribute("aria-expanded", String(v));
-  }
-  btn.addEventListener("click", function(){ abrir(painel.hidden); });
-  fundo.addEventListener("click", function(){ abrir(false); });
-  document.addEventListener("keydown", function(e){ if(e.key === "Escape") abrir(false); });
+  /* ---------- Preferências: som/tela (o painel agora é a aba "Configurações", trocada pelo menu) ---------- */
   document.querySelectorAll("[data-pref]").forEach(function(cb){
     cb.checked = !!prefs[cb.dataset.pref];
     cb.addEventListener("change", function(){

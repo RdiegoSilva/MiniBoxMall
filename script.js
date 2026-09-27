@@ -247,10 +247,11 @@
   var btnEncerrar = document.getElementById("btnEncerrar");
   var toastEl = document.getElementById("toast");
 
-  var totalItens = document.getElementById("totalItens");
-  var totalBruto = document.getElementById("totalBruto");
-  var totalLiquido = document.getElementById("totalLiquido");
+  var totalItensEls = document.querySelectorAll("[data-total-itens]");
+  var totalBrutoEls = document.querySelectorAll("[data-total-bruto]");
+  var totalLiquidoEls = document.querySelectorAll("[data-total-liquido]");
   var topbarTotalVal = document.getElementById("topbarTotalVal");
+  var ultimasPesagensEl = document.getElementById("ultimasPesagens");
 
   function fmt(n){
     if(isNaN(n)) n = 0;
@@ -599,14 +600,26 @@
   avisoModal.addEventListener("click", function(e){ if(e.target === avisoModal) fecharAviso(); });
 
   function logoParaPdf(){
-    try{
-      var img = document.querySelector(".logo-box img");
-      if(!img || !img.naturalWidth || img.style.display === "none") return null;
-      var c = document.createElement("canvas");
-      c.width = img.naturalWidth; c.height = img.naturalHeight;
-      c.getContext("2d").drawImage(img, 0, 0);
-      return { url: c.toDataURL("image/png"), w: c.width, h: c.height };
-    }catch(e){ return null; }
+    return new Promise(function(resolve){
+      try{
+        var origem = document.querySelector(".logo-box img");
+        var src = origem && origem.getAttribute("src");
+        if(!src) src = "logo.png";
+
+        var img = new Image();
+        img.onload = function(){
+          try{
+            var c = document.createElement("canvas");
+            c.width = img.naturalWidth;
+            c.height = img.naturalHeight;
+            c.getContext("2d").drawImage(img, 0, 0);
+            resolve({ url: c.toDataURL("image/png"), w: c.width, h: c.height });
+          }catch(e){ resolve(null); }
+        };
+        img.onerror = function(){ resolve(null); };
+        img.src = src + (src.indexOf("?") >= 0 ? "&" : "?") + "pdf=" + Date.now();
+      }catch(e){ resolve(null); }
+    });
   }
 
   function tick(el){ el.classList.remove("tick"); void el.offsetWidth; el.classList.add("tick"); }
@@ -717,7 +730,11 @@
   }
 
   function flashTotais(){
-    [totalItens, totalBruto, totalLiquido].forEach(function(el){
+    [].concat(
+      Array.prototype.slice.call(totalItensEls),
+      Array.prototype.slice.call(totalBrutoEls),
+      Array.prototype.slice.call(totalLiquidoEls)
+    ).forEach(function(el){
       el.classList.remove("flash"); void el.offsetWidth; el.classList.add("flash");
     });
   }
@@ -911,12 +928,53 @@
     var somaBruto = 0, somaLiquido = 0;
     lista.forEach(function(item){ var ag = agregados(item); somaBruto += ag.bruto; somaLiquido += ag.liquido; });
 
-    totalItens.textContent = lista.length;
-    totalBruto.textContent = fmt(somaBruto) + " kg";
-    totalLiquido.textContent = fmt(somaLiquido) + " kg";
+    totalItensEls.forEach(function(el){ el.textContent = lista.length; });
+    totalBrutoEls.forEach(function(el){ el.textContent = fmt(somaBruto) + " kg"; });
+    totalLiquidoEls.forEach(function(el){ el.textContent = fmt(somaLiquido) + " kg"; });
     topbarTotalVal.innerHTML = fmt(somaLiquido) + " <small>kg</small>";
     listCountHint.textContent = lista.length + (lista.length === 1 ? " item" : " itens");
     flashTotais();
+    renderUltimasPesagens();
+  }
+
+  // ---------- Card "Últimas pesagens" (resumo na aba Pesar) ----------
+  function renderUltimasPesagens(){
+    if(!ultimasPesagensEl) return;
+    var linhas = [];
+    lista.forEach(function(item){
+      item.pesagens.forEach(function(p){
+        linhas.push({
+          codigo: item.codigo || "—",
+          nome: item.nome || "(sem nome)",
+          bruto: p.pesoBruto,
+          tara: p.tara,
+          liquido: p.pesoBruto - p.tara,
+          data: p.data, hora: p.hora,
+          ordem: (p.data || "") + " " + (p.hora || "")
+        });
+      });
+    });
+    linhas.sort(function(a,b){ return b.ordem.localeCompare(a.ordem); });
+    linhas = linhas.slice(0, 6);
+
+    ultimasPesagensEl.innerHTML = "";
+    if(linhas.length === 0){
+      var tr = document.createElement("tr");
+      tr.innerHTML = "<td colspan='6' class='empty-row'>Nenhuma pesagem registrada ainda.</td>";
+      ultimasPesagensEl.appendChild(tr);
+      return;
+    }
+    linhas.forEach(function(l){
+      var tr = document.createElement("tr");
+      tr.innerHTML =
+        "<td><span class='chip-codigo chip-mini'>" + l.codigo + "</span></td>" +
+        "<td>" + l.nome + "</td>" +
+        "<td>" + fmt(l.bruto) + " kg</td>" +
+        "<td>" + fmt(l.tara) + " kg</td>" +
+        "<td class='cel-liquido'>" + fmt(l.liquido) + " kg</td>" +
+        "<td>" + (l.hora || "") + "</td>";
+      ultimasPesagensEl.appendChild(tr);
+    });
   }
 
   btnAdd.addEventListener("click", function(){
@@ -1086,7 +1144,7 @@
     return "pesacerto_" + t.data.split("/").reverse().join("-") + "_" + t.hora.replace(":", "h");
   }
 
-  function gerarPDF(){
+  async function gerarPDF(){
     if(!window.jspdf || !window.jspdf.jsPDF){
       toast("⚠️ Biblioteca de PDF não carregou (verifique a internet)");
       return false;
@@ -1096,16 +1154,17 @@
     var pageWidth = doc.internal.pageSize.getWidth();
     var margin = 40;
 
-    doc.setFillColor(17, 24, 20);
+    // ---------- Cabeçalho (verde, igual ao site) ----------
+    doc.setFillColor(12, 43, 32);
     doc.rect(0, 0, pageWidth, 86, "F");
-    // linha vermelha em degradê (escuro > vivo > escuro)
+    // faixa em degradê verde (escuro > vivo > escuro), igual ao acento do site
     var seg = 90;
     for(var i = 0; i < seg; i++){
       var k = 1 - Math.abs(2 * (i / (seg - 1)) - 1);
-      doc.setFillColor(Math.round(127 + 128 * k), Math.round(29 + 61 * k), Math.round(29 + 48 * k));
+      doc.setFillColor(Math.round(12 + 10 * k), Math.round(43 + 120 * k), Math.round(32 + 42 * k));
       doc.rect(i * pageWidth / seg, 86, pageWidth / seg + 0.6, 6, "F");
     }
-    var logo = logoParaPdf();
+    var logo = await logoParaPdf();
     var textoX = margin;
     if(logo){
       doc.setFillColor(255, 255, 255);
@@ -1119,11 +1178,11 @@
     doc.setFontSize(20);
     doc.text("MINI BOX MALL AÇOUGUE", textoX, 40);
     doc.setFontSize(13);
-    doc.setTextColor(255, 150, 140);
+    doc.setTextColor(180, 232, 200);
     doc.text("PESACERTO — Resultado da pesagem", textoX, 60);
     doc.setFont("helvetica", "normal");
     doc.setFontSize(10);
-    doc.setTextColor(200, 212, 205);
+    doc.setTextColor(200, 222, 210);
     doc.text("Fechamento: " + t.data + " às " + t.hora, textoX, 76);
 
     var somaBruto = 0, somaLiquido = 0;
@@ -1141,27 +1200,70 @@
       ];
     });
 
+    // ---------- Cartões de resumo (Itens / Bruto / Líquido) ----------
+    var resumo = [
+      ["ITENS", String(lista.length), [15, 122, 56]],
+      ["BRUTO", fmt(somaBruto) + " kg", [153, 27, 27]],
+      ["LÍQUIDO", fmt(somaLiquido) + " kg", [153, 27, 27]]
+    ];
+    var resW = (pageWidth - margin * 2 - 20) / 3;
+    resumo.forEach(function(r, idx){
+      var x = margin + idx * (resW + 10);
+      doc.setFillColor(229, 246, 236);
+      doc.roundedRect(x, 104, resW, 46, 8, 8, "F");
+      doc.setTextColor(15, 122, 56);
+      doc.setFont("helvetica", "bold");
+      doc.setFontSize(8.5);
+      doc.text(r[0], x + 13, 121);
+      doc.setTextColor(r[2][0], r[2][1], r[2][2]);
+      doc.setFontSize(14.5);
+      doc.text(r[1], x + 13, 141);
+    });
+
+    // ---------- Referência das taras usadas (para ter noção do desconto aplicado) ----------
+    var taraY = 162;
+    doc.setFillColor(244, 248, 245);
+    doc.roundedRect(margin, taraY, pageWidth - margin * 2, 26, 7, 7, "F");
+    doc.setFont("helvetica", "bold");
+    doc.setFontSize(8.5);
+    doc.setTextColor(15, 122, 56);
+    doc.text("TARAS CADASTRADAS", margin + 12, taraY + 11);
+    doc.setFont("helvetica", "normal");
+    doc.setFontSize(9.5);
+    doc.setTextColor(60, 70, 64);
+    doc.text(
+      "Bandeja grande: " + fmt(taras.grande) + " kg    ·    Bandeja pequena: " + fmt(taras.pequena) + " kg",
+      margin + 12, taraY + 21
+    );
+
+    var tabelaY = taraY + 42;
     if(linhas.length === 0){
       doc.setTextColor(20, 23, 28);
+      doc.setFont("helvetica", "normal");
       doc.setFontSize(12);
-      doc.text("Nenhuma pesagem registrada.", margin, 120);
+      doc.text("Nenhuma pesagem registrada.", margin, tabelaY);
     } else {
       doc.autoTable({
-        startY: 120,
+        startY: tabelaY,
         margin: { left: margin, right: margin },
         head: [["Código", "Item", "Pesagens", "Bruto", "Tara", "Líquido"]],
         body: linhas,
         foot: [["", "TOTAL GERAL", String(lista.length), fmt(somaBruto) + " kg", "", fmt(somaLiquido) + " kg"]],
         theme: "grid",
-        styles: { font: "helvetica", fontSize: 10, cellPadding: 6, textColor: [20, 23, 28], lineColor: [226, 229, 235], lineWidth: 0.6 },
-        headStyles: { fillColor: [153, 27, 27], textColor: [255, 255, 255], fontStyle: "bold" },
-        footStyles: { fillColor: [254, 226, 226], textColor: [153, 27, 27], fontStyle: "bold" },
-        alternateRowStyles: { fillColor: [244, 245, 248] },
+        styles: { font: "helvetica", fontSize: 10, cellPadding: 7, textColor: [20, 23, 28], lineColor: [226, 229, 235], lineWidth: 0.6, valign: "middle" },
+        headStyles: { fillColor: [15, 122, 56], textColor: [255, 255, 255], fontStyle: "bold", fontSize: 10 },
+        footStyles: { fillColor: [201, 238, 215], textColor: [15, 122, 56], fontStyle: "bold" },
+        alternateRowStyles: { fillColor: [247, 249, 247] },
         didParseCell: function(d){
+          // pesos (Bruto, Tara, Líquido) em vermelho para destacar
+          if(d.section === "body" && [3, 4, 5].indexOf(d.column.index) > -1){
+            d.cell.styles.textColor = [153, 27, 27];
+            d.cell.styles.fontStyle = "bold";
+          }
           if(d.section === "body" && lista[d.row.index]){
             var st = lista[d.row.index].status;
-            if(st === "atencao"){ d.cell.styles.textColor = [185, 28, 28]; d.cell.styles.fontStyle = "bold"; }
-            else if(st === "ok"){ d.cell.styles.textColor = [21, 128, 61]; }
+            if(st === "atencao"){ d.cell.styles.textColor = [180, 83, 9]; }
+            else if(st === "ok"){ d.cell.styles.textColor = [15, 122, 56]; }
           }
         },
         columnStyles: {
@@ -1175,10 +1277,11 @@
     }
 
     var alt = doc.internal.pageSize.getHeight();
-    doc.setDrawColor(220, 38, 38);
+    doc.setDrawColor(22, 163, 74);
     doc.setLineWidth(2);
     doc.line(margin, alt - 38, pageWidth - margin, alt - 38);
     doc.setTextColor(102, 110, 122);
+    doc.setFont("helvetica", "normal");
     doc.setFontSize(9);
     doc.text("Documento gerado automaticamente pelo PesaCerto — dados armazenados apenas no navegador do balcão.", margin, doc.internal.pageSize.getHeight() - 24);
 
@@ -1191,7 +1294,7 @@
       toast("⚠️ Não há pesagens para gerar o PDF");
       return;
     }
-    if(gerarPDF()) toast("📄 PDF baixado!");
+    gerarPDF().then(function(ok){ if(ok) toast("📄 PDF baixado!"); });
   });
 
   var btnWhats = document.getElementById("btnWhats");
@@ -1207,7 +1310,7 @@
     }
     // Encerrar apenas baixa o PDF: sem senha e sem limpar a lista.
     // A senha continua sendo pedida somente para excluir/remover itens.
-    if(gerarPDF()){ toast("✅ Pesagem encerrada e PDF baixado!"); fx("festa"); }
+    gerarPDF().then(function(ok){ if(ok){ toast("✅ Pesagem encerrada e PDF baixado!"); fx("festa"); } });
   });
 
   // ---------- Backup e sincronização dos códigos ----------
@@ -1292,6 +1395,114 @@
   ligarStepper(qtdPequenasInput, document.getElementById("qtdPequenasMenos"), document.getElementById("qtdPequenasMais"));
   taraPersonalizadaInput.addEventListener("input", updatePreview);
   bandejaSelect.addEventListener("change", function(){ toggleTaraPersonalizadaField(); updatePreview(); });
+
+  // ---------- Aba "Códigos": ver, editar e excluir o catálogo salvo neste navegador ----------
+  (function(){
+    var painel = document.getElementById("codigosLista");
+    if(!painel) return;
+    var busca = document.getElementById("codigosBusca");
+    var contagem = document.getElementById("codigosContagem");
+    var formNovo = document.getElementById("formNovoCodigo");
+    var inCod = document.getElementById("novoCodCodigo");
+    var inNome = document.getElementById("novoCodNome");
+    var inTipo = document.getElementById("novoCodTipo");
+
+    function tipoNome(t){
+      return t === "pequena" ? "Bandeja pequena" : t === "mista" ? "Combinar" : t === "personalizada" ? "Tara personalizada" : t === "nenhuma" ? "Sem bandeja" : "Bandeja grande";
+    }
+
+    function renderCodigos(){
+      var termo = (busca.value || "").trim().toLowerCase();
+      var chaves = Object.keys(codigos).sort(function(a,b){ return (codigos[a].nome||"").localeCompare(codigos[b].nome||""); });
+      if(termo){
+        chaves = chaves.filter(function(c){
+          return c.toLowerCase().indexOf(termo) > -1 || (codigos[c].nome||"").toLowerCase().indexOf(termo) > -1;
+        });
+      }
+      contagem.textContent = chaves.length + (chaves.length === 1 ? " código" : " códigos");
+      painel.innerHTML = "";
+      if(chaves.length === 0){
+        var vazio = document.createElement("div");
+        vazio.className = "empty";
+        vazio.textContent = "Nenhum código encontrado.";
+        painel.appendChild(vazio);
+        return;
+      }
+      chaves.forEach(function(cod){
+        var row = document.createElement("div");
+        row.className = "cod-row";
+
+        var idBox = document.createElement("div");
+        idBox.className = "cod-id";
+        idBox.innerHTML = "<span class='chip-codigo chip-mini'>" + cod + "</span>";
+        row.appendChild(idBox);
+
+        var nomeSpan = document.createElement("span");
+        nomeSpan.className = "cod-nome";
+        nomeSpan.textContent = codigos[cod].nome || "";
+        nomeSpan.title = "Toque para editar o nome";
+        nomeSpan.addEventListener("click", function(){
+          var input = document.createElement("input");
+          input.type = "text"; input.className = "cod-nome-edit"; input.value = codigos[cod].nome || "";
+          nomeSpan.replaceWith(input); input.focus(); input.select();
+          function salvarNome(){
+            var v = input.value.trim();
+            if(v){ codigos[cod].nome = v; safeSet(CODIGOS_KEY, codigos); toast("✏️ Nome atualizado"); }
+            renderCodigos();
+          }
+          input.addEventListener("blur", salvarNome);
+          input.addEventListener("keydown", function(e){ if(e.key === "Enter") input.blur(); if(e.key === "Escape") renderCodigos(); });
+        });
+        row.appendChild(nomeSpan);
+
+        var tipoSel = document.createElement("select");
+        tipoSel.className = "cod-tipo";
+        [["grande","Bandeja grande"],["pequena","Bandeja pequena"],["mista","Combinar"],["personalizada","Tara personalizada"],["nenhuma","Sem bandeja"]].forEach(function(o){
+          var op = document.createElement("option"); op.value = o[0]; op.textContent = o[1];
+          if(codigos[cod].tipo === o[0]) op.selected = true;
+          tipoSel.appendChild(op);
+        });
+        tipoSel.addEventListener("change", function(){
+          codigos[cod].tipo = tipoSel.value; safeSet(CODIGOS_KEY, codigos); toast("⚖️ " + tipoNome(tipoSel.value) + " definida para " + cod);
+        });
+        row.appendChild(tipoSel);
+
+        var del = document.createElement("button");
+        del.type = "button"; del.className = "btn btn-icon-round danger"; del.title = "Excluir código"; del.textContent = "🗑️";
+        del.addEventListener("click", function(){
+          pedirSenha("Excluir o código \"" + cod + " — " + (codigos[cod].nome||"") + "\" do catálogo?", function(){
+            delete codigos[cod]; safeSet(CODIGOS_KEY, codigos); toast("🗑️ Código excluído"); renderCodigos();
+          });
+        });
+        row.appendChild(del);
+
+        painel.appendChild(row);
+      });
+    }
+
+    busca.addEventListener("input", renderCodigos);
+    formNovo.addEventListener("submit", function(e){
+      e.preventDefault();
+      var cod = inCod.value.trim(), nome = inNome.value.trim();
+      if(!cod || !nome){ toast("⚠️ Preencha código e nome"); return; }
+      codigos[cod] = { nome: nome, tipo: inTipo.value };
+      safeSet(CODIGOS_KEY, codigos);
+      inCod.value = ""; inNome.value = ""; inTipo.value = "grande";
+      toast("✅ Código " + cod + " salvo no catálogo");
+      renderCodigos();
+    });
+
+    document.querySelectorAll(".tabbar-btn[data-tab-target='codigos']").forEach(function(b){
+      b.addEventListener("click", renderCodigos);
+    });
+    renderCodigos();
+  })();
+
+  // ---------- Atalhos de "Ações rápidas" (aba Pesar) que espelham os botões da Lista ----------
+  [["btnCopyQuick","btnCopy"],["btnPdfQuick","btnPdf"],["btnWhatsQuick","btnWhats"],["btnEncerrarQuick","btnEncerrar"]].forEach(function(par){
+    var origem = document.getElementById(par[0]), destino = document.getElementById(par[1]);
+    if(origem && destino) origem.addEventListener("click", function(){ destino.click(); });
+  });
 
   loadTarasIntoInputs();
   toggleTaraPersonalizadaField();
