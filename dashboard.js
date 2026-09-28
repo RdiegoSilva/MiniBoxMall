@@ -3,7 +3,10 @@
   "use strict";
   var $ = function(id){ return document.getElementById(id); };
   function get(k, f){ try{ var r = localStorage.getItem(k); return r ? JSON.parse(r) : f; }catch(e){ return f; } }
-  function kg(n){ return (n || 0).toLocaleString("pt-BR", { minimumFractionDigits: 3, maximumFractionDigits: 3 }) + " kg"; }
+  function kg(n){
+    var c = 3; try{ c = localStorage.getItem("pesacerto_casas") === "1" ? 1 : 3; }catch(e){}
+    return (n || 0).toLocaleString("pt-BR", { minimumFractionDigits: c, maximumFractionDigits: c }) + " kg";
+  }
   function esc(s){ return String(s == null ? "" : s).replace(/[&<>"]/g, function(c){ return { "&": "&amp;", "<": "&lt;", ">": "&gt;", '"': "&quot;" }[c]; }); }
   function dia(off){ var d = new Date(); d.setDate(d.getDate() - off); return d.toLocaleDateString("pt-BR"); }
   function delta(a, b, un){

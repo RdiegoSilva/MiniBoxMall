@@ -268,6 +268,14 @@
           </div>
 
           <div class="card">
+            <div class="bulk-bar" id="bulkBar" hidden>
+              <label class="bulk-all"><input type="checkbox" id="bulkAll"><span id="bulkInfo">Selecionar todos</span></label>
+              <div class="bulk-btns">
+                <button type="button" class="btn btn-sm bulk-ok" data-bulk="ok" disabled>✔️ OK</button>
+                <button type="button" class="btn btn-sm bulk-at" data-bulk="atencao" disabled>⚠️ Atenção</button>
+                <button type="button" class="btn btn-sm bulk-del" data-bulk="excluir" disabled>🗑️ Excluir</button>
+              </div>
+            </div>
             <div class="list" id="lista"></div>
 
             <div class="action-grid quatro">
@@ -300,6 +308,11 @@
             <label class="sw-row"><span>🔊 Som e vibração ao adicionar</span><input type="checkbox" data-pref="som"></label>
             <label class="sw-row"><span>🔆 Manter a tela ligada</span><input type="checkbox" data-pref="tela"></label>
             <label class="sw-row"><span>🌧️ Efeito de chuva no fundo</span><input type="checkbox" id="prefChuva"></label>
+            <label class="sw-row"><span>🔢 Formato dos pesos</span>
+              <select id="prefCasas" class="pref-select" aria-label="Formato dos pesos">
+                <option value="3">101,900 kg</option>
+                <option value="1">101,9 kg</option>
+              </select></label>
             <div class="sw-row ver-row"><span>🏷️ Versão do site</span><b class="ver-badge" data-versao-data>v</b></div>
             <button type="button" class="btn btn-outline-slate" id="btnInstall" hidden>📲 Instalar o app</button>
             <p class="ios-hint" id="iosHint" hidden>No iPhone: toque em <b>Compartilhar</b> e depois em <b>Adicionar à Tela de Início</b>.</p>

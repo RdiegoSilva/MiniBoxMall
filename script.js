@@ -253,9 +253,12 @@
   var topbarTotalVal = document.getElementById("topbarTotalVal");
   var ultimasPesagensEl = document.getElementById("ultimasPesagens");
 
+  // formato dos pesos: 3 casas (101,900) ou 1 casa (101,9) — escolha em Configurações
+  var casas = 3;
+  try{ casas = localStorage.getItem("pesacerto_casas") === "1" ? 1 : 3; }catch(e){}
   function fmt(n){
     if(isNaN(n)) n = 0;
-    return n.toLocaleString("pt-BR", { minimumFractionDigits: 3, maximumFractionDigits: 3 });
+    return n.toLocaleString("pt-BR", { minimumFractionDigits: casas, maximumFractionDigits: casas });
   }
   // aceita vírgula ou ponto (101,9 ou 101.9)
   function numBR(raw){ return parseFloat(String(raw == null ? "" : raw).replace(",", ".")); }
@@ -583,7 +586,7 @@
 
   function analisarPeso(codigo, liq){
     if(liq <= 0) return "O líquido deu " + fmt(liq) + " kg: o peso está menor que a bandeja. Confira se digitou em gramas (1,5 kg = 1500).";
-    if(liq > 40) return "Líquido de " + fmt(liq) + " kg é muito alto para uma pesagem. Pode ter sobrado um zero, ou o peso foi digitado errado.";
+    return ""; // avisos de peso alto / fora da média removidos (balança pode pesar 100 kg ou mais)
     if(codigo){
       var item = lista.find(function(it){ return it.codigo && it.codigo.toLowerCase() === codigo.toLowerCase(); });
       if(item && item.pesagens.length){
@@ -799,7 +802,42 @@
     });
   }
 
-  function renderLista(idxDestaque){
+  var selecionados = [];
+  var bulkBar = document.getElementById("bulkBar"), bulkAll = document.getElementById("bulkAll"), bulkInfo = document.getElementById("bulkInfo");
+  function atualizarBulk(){
+    if(!bulkBar) return;
+    selecionados = selecionados.filter(function(it){ return lista.indexOf(it) > -1; });
+    bulkBar.hidden = lista.length === 0;
+    var n = selecionados.length;
+    bulkAll.checked = n > 0 && n === lista.length;
+    bulkAll.indeterminate = n > 0 && n < lista.length;
+    bulkInfo.textContent = n ? n + (n === 1 ? " selecionado" : " selecionados") : "Selecionar todos";
+    bulkBar.classList.toggle("tem-sel", n > 0);
+    Array.prototype.forEach.call(bulkBar.querySelectorAll("[data-bulk]"), function(b){ b.disabled = n === 0; });
+  }
+  if(bulkBar){
+    bulkAll.addEventListener("change", function(){ selecionados = bulkAll.checked ? lista.slice() : []; renderLista(); });
+    bulkBar.addEventListener("click", function(e){
+      var b = e.target.closest("[data-bulk]"); if(!b || !selecionados.length) return;
+      var acao = b.getAttribute("data-bulk"), alvo = selecionados.slice(), n = alvo.length;
+      if(acao === "ok" || acao === "atencao"){
+        alvo.forEach(function(it){ it.status = acao; });
+        safeSet(LISTA_KEY, lista); selecionados = []; renderLista();
+        toast((acao === "ok" ? "✔️ " : "⚠️ ") + n + (n === 1 ? " item marcado como " : " itens marcados como ") + (acao === "ok" ? "OK" : "ATENÇÃO"));
+      } else if(acao === "excluir"){
+        pedirSenha("Mover " + n + (n === 1 ? " item" : " itens") + " para a lixeira?", function(){
+          alvo.forEach(function(it){
+            pushLixeira({ tipo: "item", label: (it.codigo ? it.codigo + " — " : "") + it.nome, item: deepCopy(it) });
+            var i = lista.indexOf(it); if(i > -1) lista.splice(i, 1);
+          });
+          safeSet(LISTA_KEY, lista); selecionados = []; renderLista();
+          toast("🗑️ " + n + (n === 1 ? " item movido" : " itens movidos") + " para a lixeira");
+        });
+      }
+    });
+  }
+  function renderLista(idxDestaque){ renderListaBase(idxDestaque); atualizarBulk(); }
+  function renderListaBase(idxDestaque){
     if(idxDestaque === undefined) esconderDesfazer();
     listaEl.innerHTML = "";
 
@@ -820,6 +858,16 @@
 
         var head = document.createElement("div");
         head.className = "ticket-head";
+
+        var chk = document.createElement("input");
+        chk.type = "checkbox"; chk.className = "sel-chk"; chk.setAttribute("aria-label", "Selecionar item");
+        chk.checked = selecionados.indexOf(item) > -1;
+        chk.addEventListener("change", function(){
+          var p = selecionados.indexOf(item);
+          if(chk.checked && p < 0) selecionados.push(item); else if(!chk.checked && p > -1) selecionados.splice(p, 1);
+          atualizarBulk();
+        });
+        head.appendChild(chk);
 
         var idBox = document.createElement("div");
         idBox.className = "ticket-id";
@@ -1571,6 +1619,17 @@
   loadTarasIntoInputs();
   toggleTaraPersonalizadaField();
   updatePreview();
+  (function(){
+    var sel = document.getElementById("prefCasas");
+    if(!sel) return;
+    sel.value = String(casas);
+    sel.addEventListener("change", function(){
+      casas = sel.value === "1" ? 1 : 3;
+      try{ localStorage.setItem("pesacerto_casas", String(casas)); }catch(e){}
+      renderLista(); updatePreview();
+      toast("🔢 Formato: " + (casas === 1 ? "101,9 kg" : "101,900 kg"));
+    });
+  })();
   renderLista();
   renderLixeira();
 })();
