@@ -873,3 +873,42 @@ body{ font-size:14px; }
   .display-readout{ font-size:24px; }
   .totals{ padding:8px 12px; }
 }
+
+
+/* =====================================================================
+   CORREÇÃO CELULAR — nada sobreposto, barra de totais enxuta
+   ===================================================================== */
+@media (max-width:760px){
+  .app-shell{ display:block; min-height:0; }
+  .sidebar{ display:block; flex:none !important; width:100% !important; height:0 !important; padding:0 !important; min-height:0; overflow:visible; }
+  .side-nav{ width:auto; }
+  .main-shell{ display:block; min-height:0; }
+  .content{ display:block; padding:12px 12px 8px; }
+  .content-main,.tab-panel{ min-width:0; }
+  .right-rail{ display:none !important; }
+  .topbar{ display:flex; flex-wrap:wrap; }
+  .topbar-total{ flex:1 1 100%; }
+  .top-actions{ width:100%; justify-content:space-between; }
+  .totals{ position:sticky; bottom:calc(var(--nav-h) + var(--safe-b)); padding:8px 14px; border-radius:14px 14px 0 0; margin-top:8px; }
+  .totals-inner{ display:flex; justify-content:space-between; gap:8px; flex-wrap:nowrap; }
+  .totals-lbl,.totals .btn{ display:none; }
+  .totals .item{ flex:1; }
+  .totals .item .val{ font-size:13px; }
+  .stat-grid{ grid-template-columns:1fr 1fr; }
+  .dash-row2,.dash-row3,.dash-row4{ display:block; }
+  .dash-row2 > *,.dash-row3 > *,.dash-row4 > *{ margin-bottom:12px !important; width:100%; }
+  .grid-2{ display:block; }
+  .grid-2 > .field{ margin-bottom:12px; }
+  .action-grid.quatro{ grid-template-columns:1fr 1fr; }
+  .panel-title-pills{ margin-left:0; }
+  .table-wrap{ overflow-x:auto; -webkit-overflow-scrolling:touch; }
+  .cod-row{ flex-wrap:wrap; }
+}
+@media (max-width:760px){
+  .topbar{ flex-wrap:nowrap; align-items:center; gap:8px; padding:8px 12px; }
+  .topbar-total{ flex:1 1 auto; min-width:0; padding:5px 10px; }
+  .topbar-total .val{ font-size:14px; }
+  .top-actions{ width:auto; flex:none; gap:6px; }
+  .theme-switch button{ padding:6px 8px; }
+  .help-link{ display:none; }
+}
