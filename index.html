@@ -97,7 +97,8 @@
           </div>
           <div class="dash-row3">
             <div class="card">
-              <div class="dash-card-head"><h3>📋 Últimas Pesagens</h3><button type="button" class="link-btn" data-tab-target="lista">Ver todas →</button></div>
+              <div class="dash-card-head"><h3>📋 Últimas Pesagens</h3>
+              <span class="dash-acts"><button type="button" class="link-btn link-danger" id="dashLimpar">🧹 Limpar</button><button type="button" class="link-btn" data-tab-target="lista">Ver todas →</button></span></div>
               <div class="table-wrap"><table class="tabela-ultimas"><thead><tr><th>Data / Hora</th><th>Produto</th><th>Bruto</th><th>Tara</th><th>Líquido</th><th>Status</th></tr></thead><tbody id="dashUltimas"></tbody></table></div>
             </div>
             <div class="card tempo-real">
@@ -232,7 +233,7 @@
           <div class="card card-ultimas">
             <div class="panel-title panel-title-sm">
               <h3><span class="ico">🕘</span> Últimas pesagens</h3>
-              <button type="button" class="link-btn tabbar-btn" data-tab-target="lista">Ver todas →</button>
+              <span class="dash-acts"><button type="button" class="link-btn link-danger" id="btnLimparUltimas">🧹 Limpar</button><button type="button" class="link-btn tabbar-btn" data-tab-target="lista">Ver todas →</button></span>
             </div>
             <div class="table-wrap">
               <table class="tabela-ultimas">

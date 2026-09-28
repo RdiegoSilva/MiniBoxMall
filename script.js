@@ -953,6 +953,15 @@
   }
 
   // ---------- Card "Últimas pesagens" (resumo na aba Pesar) ----------
+  var btnLimparUltimas = document.getElementById("btnLimparUltimas");
+  if(btnLimparUltimas){
+    btnLimparUltimas.addEventListener("click", function(){
+      if(!window.confirm("Limpar a tabela de últimas pesagens?\n\nSuas pesagens da lista NÃO são apagadas — só somem desta tabela.")) return;
+      try{ localStorage.setItem("pesacerto_ultimas_limpas", new Date().toISOString()); }catch(e){}
+      renderUltimasPesagens();
+      toast("🧹 Últimas pesagens limpas");
+    });
+  }
   function renderUltimasPesagens(){
     if(!ultimasPesagensEl) return;
     var linhas = [];
@@ -964,11 +973,13 @@
           bruto: p.pesoBruto,
           tara: p.tara,
           liquido: p.pesoBruto - p.tara,
-          data: p.data, hora: p.hora,
+          data: p.data, hora: p.hora, iso: p.horarioIso || "",
           ordem: (p.data || "") + " " + (p.hora || "")
         });
       });
     });
+    var corte = ""; try{ corte = localStorage.getItem("pesacerto_ultimas_limpas") || ""; }catch(e){}
+    if(corte) linhas = linhas.filter(function(l){ return l.iso && l.iso > corte; });
     linhas.sort(function(a,b){ return b.ordem.localeCompare(a.ordem); });
     linhas = linhas.slice(0, 6);
 
@@ -1466,7 +1477,7 @@
 
     function renderCodigos(){
       var termo = (busca.value || "").trim().toLowerCase();
-      var chaves = Object.keys(codigos).sort(function(a,b){ return (codigos[a].nome||"").localeCompare(codigos[b].nome||""); });
+      var chaves = Object.keys(codigos).sort(function(a,b){ return (codigos[a].nome||"").localeCompare(codigos[b].nome||"", "pt-BR", { sensitivity: "base", numeric: true }); });
       if(termo){
         chaves = chaves.filter(function(c){
           return c.toLowerCase().indexOf(termo) > -1 || (codigos[c].nome||"").toLowerCase().indexOf(termo) > -1;

@@ -34,6 +34,8 @@
     set("stOk", h.length ? Math.round(bons / h.length * 100) + "%" : "—");
     set("stOkD", !h.length ? "Sem pesagens hoje" : (bons === h.length ? "Sem divergências" : (h.length - bons) + " em atenção"));
 
+    var corte = ""; try{ corte = localStorage.getItem("pesacerto_ultimas_limpas") || ""; }catch(e){}
+    if(corte) todas = todas.filter(function(r){ return r.iso && r.iso > corte; });
     todas.sort(function(a, b){ return a.iso < b.iso ? 1 : a.iso > b.iso ? -1 : 0; });
     var tb = $("dashUltimas");
     tb.innerHTML = todas.slice(0, 5).map(function(r){
@@ -81,6 +83,12 @@
   res.addEventListener("click", function(e){ var b = e.target.closest("button"); if(b) usar(b.getAttribute("data-cod")); });
   $("trSalvar").addEventListener("click", function(){ var a = $("btnAdd"); if(a) a.click(); });
 
+  var dl = $("dashLimpar");
+  if(dl) dl.addEventListener("click", function(){
+    if(!window.confirm("Limpar a tabela de últimas pesagens?\n\nSuas pesagens da lista NÃO são apagadas.")) return;
+    try{ localStorage.setItem("pesacerto_ultimas_limpas", new Date().toISOString()); }catch(e){}
+    render();
+  });
   render();
   document.addEventListener("click", function(){ setTimeout(render, 80); });
   setInterval(function(){ var pn = document.querySelector(".panel-dashboard"); if(pn && pn.classList.contains("active") && !document.hidden) render(); }, 2000);
