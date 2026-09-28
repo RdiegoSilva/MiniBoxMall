@@ -6,7 +6,8 @@
 <title>PesaCerto</title>
 <link rel="icon" href="logo.png">
 <link rel="manifest" href="manifest.webmanifest">
-<meta name="theme-color" content="#0b2b20">
+<meta name="theme-color" content="#0a1f44">
+<meta name="format-detection" content="telephone=no">
 <meta name="mobile-web-app-capable" content="yes">
 <meta name="apple-mobile-web-app-capable" content="yes">
 <meta name="apple-mobile-web-app-title" content="PesaCerto">
@@ -15,12 +16,24 @@
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
 <link href="https://fonts.googleapis.com/css2?family=Sora:wght@600;700;800&family=Inter:wght@400;500;600;700&family=IBM+Plex+Mono:wght@500;700&display=swap" rel="stylesheet">
+<script src="version.js"></script>
 <script src="theme.js"></script>
 <link rel="stylesheet" href="styles.css">
 <script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf/2.5.1/jspdf.umd.min.js"></script>
 <script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf-autotable/3.8.2/jspdf.plugin.autotable.min.js"></script>
 </head>
 <body>
+
+<header class="appbar">
+  <div class="appbar-brand">
+    <div class="logo-box"><img src="logo.png" alt="PesaCerto" onerror="this.style.display='none'; this.nextElementSibling.style.display='flex';"><div class="logo-fallback">⚖️</div></div>
+    <div class="appbar-text"><span class="appbar-title">Pesa<b>Certo</b></span><span class="appbar-sub">Mais controle, menos erro.</span></div>
+  </div>
+  <div class="appbar-right">
+    <span class="net-status" id="netStatus"><i></i><span>Sistema online</span></span>
+    <span class="ver-badge" data-versao>v</span>
+  </div>
+</header>
 
 <div class="app-shell">
 
@@ -37,11 +50,13 @@
     </div>
 
     <nav class="side-nav" aria-label="Navegação principal">
-      <button class="tabbar-btn active" data-tab-target="pesar" type="button"><span class="ico">⚖️</span><span>Pesar</span></button>
-      <button class="tabbar-btn" data-tab-target="lista" type="button"><span class="ico">📋</span><span>Lista</span></button>
+      <button class="tabbar-btn active" data-tab-target="dashboard" type="button"><span class="ico">🏠</span><span>Dashboard</span></button>
+      <button class="tabbar-btn" data-tab-target="pesar" type="button"><span class="ico">⚖️</span><span>Nova Pesagem</span></button>
+      <button class="tabbar-btn" data-tab-target="lista" type="button"><span class="ico">📋</span><span>Pesagens de Hoje</span></button>
       <button class="tabbar-btn" data-tab-target="config" type="button"><span class="ico">⚙️</span><span>Configurações</span></button>
       <a class="tabbar-btn side-nav-link" href="tutorial.html"><span class="ico">📖</span><span>Como usar</span></a>
     </nav>
+    <div class="side-foot"><div class="foot-card"><span class="foot-logo">⚖️</span><b>Pesa<em>Certo</em></b><p>Precisão em cada quilo. Confiança em cada resultado.</p><span class="ver-badge" data-versao>v</span></div></div>
   </aside>
 
   <div class="main-shell">
@@ -61,7 +76,47 @@
     <main class="content">
       <div class="content-main">
 
-        <div class="tab-panel panel-pesar active" data-tab="pesar">
+        <div class="tab-panel panel-dashboard active" data-tab="dashboard">
+          <div class="dash-head">
+            <div><h2 class="dash-title">Dashboard</h2><p class="dash-sub">Resumo do seu dia no controle de pesagens.</p></div>
+            <span class="date-chip" id="dashData">📅 —</span>
+          </div>
+          <div class="stat-grid">
+            <div class="stat s-azul"><span class="stat-ico">⚖️</span><span class="stat-lbl">Pesagens hoje</span><b id="stPesagens">0</b><small id="stPesagensD">—</small></div>
+            <div class="stat s-verde"><span class="stat-ico">📦</span><span class="stat-lbl">Peso total</span><b id="stPeso">0,000 kg</b><small id="stPesoD">—</small></div>
+            <div class="stat s-roxo"><span class="stat-ico">🏷️</span><span class="stat-lbl">Produtos cadastrados</span><b id="stProd">0</b><small>no seu cadastro</small></div>
+            <div class="stat s-ok"><span class="stat-ico">✔️</span><span class="stat-lbl">Pesagens corretas</span><b id="stOk">—</b><small id="stOkD">Sem pesagens hoje</small></div>
+          </div>
+          <div class="dash-row2">
+            <button type="button" class="cta-nova" data-tab-target="pesar"><span class="cta-ico">⚖️</span><span><b>Nova Pesagem</b><small>Registre uma nova pesagem de forma rápida e prática.</small></span><i>›</i></button>
+            <div class="card busca-card">
+              <div class="busca-head"><span class="busca-ico">▌▌▍▌▍</span><div><b>Pesquisar Produto</b><small>Busque por nome ou código.</small></div></div>
+              <input type="text" id="dashBusca" placeholder="Digite o nome ou código…" autocomplete="off" enterkeyhint="search">
+              <div class="busca-res" id="dashRes" hidden></div>
+            </div>
+          </div>
+          <div class="dash-row3">
+            <div class="card">
+              <div class="dash-card-head"><h3>📋 Últimas Pesagens</h3><button type="button" class="link-btn" data-tab-target="lista">Ver todas →</button></div>
+              <div class="table-wrap"><table class="tabela-ultimas"><thead><tr><th>Data / Hora</th><th>Produto</th><th>Bruto</th><th>Tara</th><th>Líquido</th><th>Status</th></tr></thead><tbody id="dashUltimas"></tbody></table></div>
+            </div>
+            <div class="card tempo-real">
+              <div class="dash-card-head"><h3>⚖️ Peso em Tempo Real</h3></div>
+              <div class="tr-bruto"><small>Bruto</small><b id="trBruto">0,000 kg</b></div>
+              <div class="tr-duo"><div class="tr-tara"><small>Tara</small><b id="trTara">0,000 kg</b></div><div class="tr-liq"><small>Líquido</small><b id="trLiq">0,000 kg</b></div></div>
+              <button type="button" class="btn-salvar" id="trSalvar">✔ Salvar Pesagem</button>
+            </div>
+          </div>
+          <div class="dash-row4">
+            <div class="card"><div class="dash-card-head"><h3>📊 Produtos Mais Pesados <span class="muted">(Hoje)</span></h3></div><ol class="rank" id="dashRank"></ol></div>
+            <div class="card"><div class="dash-card-head"><h3>📦 Lista Atual</h3></div>
+              <div class="inv"><div><small>Total de itens na lista</small><b id="lsItens">0</b></div><div><small>Líquido total da lista</small><b id="lsLiq">0,000 kg</b></div><div><small>Itens em atenção</small><b id="lsAt" class="bad">0</b><em>Revisar</em></div></div></div>
+            <div class="card"><div class="dash-card-head"><h3>⚡ Acesso Rápido</h3></div>
+              <div class="acesso"><button type="button" class="acoes-btn" data-tab-target="pesar"><span class="ico">⚖️</span>Nova Pesagem<i>›</i></button><button type="button" class="acoes-btn" data-tab-target="lista"><span class="ico">📋</span>Pesagens de Hoje<i>›</i></button><button type="button" class="acoes-btn" data-tab-target="config"><span class="ico">🏷️</span>Produtos<i>›</i></button><button type="button" class="acoes-btn" data-tab-target="config"><span class="ico">⚙️</span>Configurações<i>›</i></button></div></div>
+          </div>
+        </div>
+
+        <div class="tab-panel panel-pesar" data-tab="pesar">
           <div class="panel-title">
             <h2>Nova pesagem</h2>
             <span class="pill-hint">soma automática por código</span>
@@ -105,9 +160,15 @@
                   </select>
                 </div>
                 <div class="field">
-                  <label for="peso">Peso na balança (g)</label>
-                  <input type="number" id="peso" inputmode="numeric" step="1" min="0" placeholder="Digite o peso em gramas">
-                  <span class="hint">1kg = 1000 · 1,5kg = 1500</span>
+                  <label for="peso">Peso na balança</label>
+                  <div class="input-plus">
+                    <input type="text" id="peso" inputmode="decimal" autocomplete="off" placeholder="ex.: 101,9">
+                    <select id="pesoUnidade" class="unit-select" aria-label="Unidade do peso">
+                      <option value="kg">kg</option>
+                      <option value="g">g</option>
+                    </select>
+                  </div>
+                  <span class="hint" id="pesoHint">Como no visor: 101,9 = 101,9 kg</span>
                 </div>
               </div>
 
@@ -139,19 +200,22 @@
                   </div>
                 </div>
                 <div class="field" style="grid-column:1/-1">
-                  <label for="taraExtra">Tara personalizada extra <span class="unit">gramas</span></label>
+                  <label for="taraExtra">Tara personalizada extra <span class="unit">kg</span></label>
                   <div class="input-plus">
-                    <input type="text" id="taraExtra" inputmode="text" enterkeyhint="done" autocomplete="off" placeholder="ex.: 4 ou 4+4+10">
-                    <button type="button" class="btn-plus" id="btnTaraPlus" aria-label="Inserir sinal de mais">+</button>
+                    <input type="text" id="taraExtra" inputmode="text" enterkeyhint="done" autocomplete="off" placeholder="ex.: 4+4+0,932">
+                    <button type="button" class="btn-plus" id="btnTaraPlus" data-plus-for="taraExtra" aria-label="Inserir sinal de mais">+</button>
                   </div>
-                  <span class="hint">Some quantas quiser com + (4+4+10 = 18g). Deixe vazio se não tiver.</span>
+                  <span class="hint">Some quantas quiser com + (4+4+0,932 = 8,932 kg). Deixe vazio se não tiver.</span>
                 </div>
               </div>
 
               <div class="field" id="taraPersonalizadaField">
-                <label for="taraPersonalizada">Tara personalizada (gramas)</label>
-                <input type="number" id="taraPersonalizada" inputmode="numeric" step="1" min="0" placeholder="4">
-                <span class="hint">Em gramas: 4 = 4g · 1000 = 1kg</span>
+                <label for="taraPersonalizada">Tara personalizada <span class="unit">kg</span></label>
+                <div class="input-plus">
+                  <input type="text" id="taraPersonalizada" inputmode="decimal" enterkeyhint="done" autocomplete="off" placeholder="ex.: 4+4+0,932+0,123">
+                  <button type="button" class="btn-plus" id="btnTaraPlus2" data-plus-for="taraPersonalizada" aria-label="Inserir sinal de mais">+</button>
+                </div>
+                <span class="hint" id="taraPersHint">Some quantas quiser com o botão +. Ex.: 4+4+0,932+0,123 = 9,055 kg</span>
               </div>
             </div>
 
@@ -234,6 +298,8 @@
             <span class="subsection-lbl">Preferências</span>
             <label class="sw-row"><span>🔊 Som e vibração ao adicionar</span><input type="checkbox" data-pref="som"></label>
             <label class="sw-row"><span>🔆 Manter a tela ligada</span><input type="checkbox" data-pref="tela"></label>
+            <label class="sw-row"><span>🌧️ Efeito de chuva no fundo</span><input type="checkbox" id="prefChuva"></label>
+            <div class="sw-row ver-row"><span>🏷️ Versão do site</span><b class="ver-badge" data-versao-data>v</b></div>
             <button type="button" class="btn btn-outline-slate" id="btnInstall" hidden>📲 Instalar o app</button>
             <p class="ios-hint" id="iosHint" hidden>No iPhone: toque em <b>Compartilhar</b> e depois em <b>Adicionar à Tela de Início</b>.</p>
             <a class="btn btn-outline-slate" href="tutorial.html">📖 Como usar o PesaCerto</a>
@@ -376,13 +442,17 @@
 
 <script src="script.js"></script>
 <script src="extras.js"></script>
+<script src="fx.js"></script>
+<script src="dashboard.js"></script>
 <script>
-document.getElementById("btnTaraPlus").addEventListener("click",function(){
-  var i=document.getElementById("taraExtra");
-  var v=i.value.trim();
-  if(v && !/[+]$/.test(v)) i.value=v+"+";
-  i.focus();
-  i.dispatchEvent(new Event("input",{bubbles:true}));
+document.querySelectorAll("[data-plus-for]").forEach(function(b){
+  b.addEventListener("click",function(){
+    var i=document.getElementById(b.getAttribute("data-plus-for"));
+    var v=i.value.trim();
+    if(v && !/[+]$/.test(v)) i.value=v+"+";
+    i.focus();
+    i.dispatchEvent(new Event("input",{bubbles:true}));
+  });
 });
 </script>
 </body>

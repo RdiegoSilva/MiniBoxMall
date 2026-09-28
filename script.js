@@ -257,8 +257,21 @@
     if(isNaN(n)) n = 0;
     return n.toLocaleString("pt-BR", { minimumFractionDigits: 3, maximumFractionDigits: 3 });
   }
-  function scaleToKg(raw){ var n = parseFloat(raw); return isNaN(n) ? NaN : n / 1000; }
-  function gramasToKg(raw){ var n = parseFloat(raw); return isNaN(n) ? NaN : n / 1000; }
+  // aceita vírgula ou ponto (101,9 ou 101.9)
+  function numBR(raw){ return parseFloat(String(raw == null ? "" : raw).replace(",", ".")); }
+  function unidadePeso(){ var u = document.getElementById("pesoUnidade"); return u ? u.value : "kg"; }
+  // peso da balança: kg (como no visor) ou g, conforme o seletor
+  function scaleToKg(raw){ var n = numBR(raw); if(isNaN(n)) return NaN; return unidadePeso() === "g" ? n / 1000 : n; }
+  // soma ilimitada separada por + (ex.: "4+4+0,932+0,123" = 9,055). Retorna NaN se não houver nenhum número.
+  function somaMais(raw){
+    var soma = 0, achou = false;
+    String(raw || "").replace(/,/g, ".").split(/[+;\s]+/).forEach(function(x){
+      var n = parseFloat(x);
+      if(!isNaN(n) && n >= 0){ soma += n; achou = true; }
+    });
+    return achou ? Math.round(soma * 1e6) / 1e6 : NaN;
+  }
+  function gramasToKg(raw){ return somaMais(raw); } // tara personalizada agora é em kg, com +
 
   function agora(){
     var d = new Date();
@@ -487,14 +500,10 @@
     var n = parseInt(input.value, 10);
     return (isNaN(n) || n < 0) ? 0 : Math.min(n, 20);
   }
-  // soma valores em gramas separados por + ; ou espaço (ex.: "4+4+10" = 18 g)
+  // tara extra (digitada em kg, separada por +) devolvida em gramas
   function lerExtraGramas(){
-    var soma = 0;
-    String(taraExtraInput.value || "").replace(/,/g, ".").split(/[+;\s]+/).forEach(function(x){
-      var n = parseFloat(x);
-      if(!isNaN(n) && n > 0) soma += n;
-    });
-    return Math.round(soma * 1000) / 1000;
+    var kg = somaMais(taraExtraInput.value);
+    return isNaN(kg) ? 0 : Math.round(kg * 1000 * 1000) / 1000; // guardado em gramas (compatível com o histórico)
   }
   function getMista(){ return { g: lerQtdMista(qtdGrandesInput), p: lerQtdMista(qtdPequenasInput), x: lerExtraGramas() }; }
   function taraTotal(tipo){
@@ -506,7 +515,7 @@
       var m = mista || { g: 0, p: 0, x: 0 }, partes = [];
       if(m.g) partes.push(m.g + "× grande");
       if(m.p) partes.push(m.p + "× pequena");
-      if(m.x) partes.push(String(m.x).replace(".", ",") + " g personalizada");
+      if(m.x) partes.push(String(m.x / 1000).replace(".", ",") + " kg personalizada");
       return "Bandejas: " + (partes.join(" + ") || "nenhuma");
     }
     var base = tipoLabelBase(tipo);
@@ -630,6 +639,11 @@
     var tara = taraTotal(bandejaSelect.value);
     previewLiquido.textContent = fmt(peso - tara);
     tick(displayReadout);
+    var th = document.getElementById("taraPersHint");
+    if(th){
+      var st = somaMais(taraPersonalizadaInput.value);
+      th.textContent = isNaN(st) ? "Some quantas quiser com o botão +. Ex.: 4+4+0,932+0,123 = 9,055 kg" : "Total da tara: " + fmt(st) + " kg";
+    }
   }
 
   var TEXTO_ENCONTRADO = "Código já cadastrado — esta pesagem vai somar";
@@ -650,8 +664,9 @@
       nomeInput.value = salvo.nome || "";
       bandejaSelect.value = salvo.tipo || "grande";
       toggleTaraPersonalizadaField();
-      if(salvo.tipo === "personalizada" && salvo.taraGramas != null){
-        taraPersonalizadaInput.value = salvo.taraGramas;
+      if(salvo.tipo === "personalizada"){
+        if(salvo.taraTexto != null) taraPersonalizadaInput.value = salvo.taraTexto;
+        else if(salvo.taraGramas != null) taraPersonalizadaInput.value = String(salvo.taraGramas / 1000).replace(".", ",");
       }
       foundTagTxt.textContent = TEXTO_ENCONTRADO;
       foundTag.classList.remove("checking");
@@ -683,7 +698,7 @@
   function salvarCodigo(codigo, nome, tipo){
     if(!codigo) return;
     var entrada = { nome: nome, tipo: tipo };
-    if(tipo === "personalizada"){ entrada.taraGramas = parseFloat(taraPersonalizadaInput.value) || 0; }
+    if(tipo === "personalizada"){ entrada.taraTexto = taraPersonalizadaInput.value.trim(); entrada.taraGramas = (somaMais(taraPersonalizadaInput.value) || 0) * 1000; }
     codigos[codigo] = entrada;
     safeSet(CODIGOS_KEY, codigos);
   }
@@ -985,7 +1000,7 @@
 
     if(!nome){ nomeInput.focus(); ativarAba("pesar"); return; }
     if(isNaN(peso) || peso <= 0){ pesoInput.focus(); ativarAba("pesar"); return; }
-    if(tipo === "personalizada" && (taraPersonalizadaInput.value === "" || isNaN(parseFloat(taraPersonalizadaInput.value)))){
+    if(tipo === "personalizada" && isNaN(somaMais(taraPersonalizadaInput.value))){
       taraPersonalizadaInput.focus();
       ativarAba("pesar");
       return;
@@ -1081,13 +1096,13 @@
     var somaBruto = 0, somaLiquido = 0;
 
     linhas.push("🥩 MINI BOX MALL AÇOUGUE — PESACERTO");
-    linhas.push("📅 Fechamento: " + t.data + " às " + t.hora);
+    linhas.push("📅 Fechamento: " + t.data + " às " + t.hora + "  ·  ordem A–Z");
     linhas.push("━━━━━━━━━━━━━━━━━━━━━━━━━━━");
 
     if(lista.length === 0){
       linhas.push("Nenhuma pesagem registrada.");
     } else {
-      lista.forEach(function(item){
+      lista.slice().sort(function(a, b){ return String(a.nome || "").localeCompare(String(b.nome || ""), "pt-BR", { sensitivity: "base", numeric: true }); }).forEach(function(item){
         var ag = agregados(item);
         somaBruto += ag.bruto;
         somaLiquido += ag.liquido;
@@ -1154,136 +1169,161 @@
     var pageWidth = doc.internal.pageSize.getWidth();
     var margin = 40;
 
-    // ---------- Cabeçalho (verde, igual ao site) ----------
-    doc.setFillColor(12, 43, 32);
-    doc.rect(0, 0, pageWidth, 86, "F");
-    // faixa em degradê verde (escuro > vivo > escuro), igual ao acento do site
+    // ---------- Cabeçalho (azul marinho, igual ao site) ----------
+    var AZUL = [29, 78, 216], MARINHO = [10, 32, 80], TXT = [15, 29, 58], MUTED = [95, 111, 140];
+    doc.setFillColor(MARINHO[0], MARINHO[1], MARINHO[2]);
+    doc.rect(0, 0, pageWidth, 88, "F");
     var seg = 90;
     for(var i = 0; i < seg; i++){
       var k = 1 - Math.abs(2 * (i / (seg - 1)) - 1);
-      doc.setFillColor(Math.round(12 + 10 * k), Math.round(43 + 120 * k), Math.round(32 + 42 * k));
-      doc.rect(i * pageWidth / seg, 86, pageWidth / seg + 0.6, 6, "F");
+      doc.setFillColor(Math.round(29 + 31 * k), Math.round(78 + 52 * k), Math.round(216 + 30 * k));
+      doc.rect(i * pageWidth / seg, 88, pageWidth / seg + 0.6, 5, "F");
     }
     var logo = await logoParaPdf();
     var textoX = margin;
     if(logo){
       doc.setFillColor(255, 255, 255);
-      doc.roundedRect(margin - 4, 13, 64, 60, 9, 9, "F");
+      doc.roundedRect(margin - 4, 14, 64, 60, 10, 10, "F");
       var esc = Math.min(56 / logo.w, 52 / logo.h);
-      doc.addImage(logo.url, "PNG", margin - 4 + (64 - logo.w * esc) / 2, 13 + (60 - logo.h * esc) / 2, logo.w * esc, logo.h * esc);
-      textoX = margin + 76;
+      doc.addImage(logo.url, "PNG", margin - 4 + (64 - logo.w * esc) / 2, 14 + (60 - logo.h * esc) / 2, logo.w * esc, logo.h * esc);
+      textoX = margin + 78;
     }
     doc.setTextColor(255, 255, 255);
     doc.setFont("helvetica", "bold");
     doc.setFontSize(20);
     doc.text("MINI BOX MALL AÇOUGUE", textoX, 40);
-    doc.setFontSize(13);
-    doc.setTextColor(180, 232, 200);
-    doc.text("PESACERTO — Resultado da pesagem", textoX, 60);
-    doc.setFont("helvetica", "normal");
-    doc.setFontSize(10);
-    doc.setTextColor(200, 222, 210);
-    doc.text("Fechamento: " + t.data + " às " + t.hora, textoX, 76);
-
-    var somaBruto = 0, somaLiquido = 0;
-    var linhas = lista.map(function(item){
-      var ag = agregados(item);
-      somaBruto += ag.bruto;
-      somaLiquido += ag.liquido;
-      return [
-        item.codigo || "—",
-        item.nome || "(sem nome)",
-        String(ag.qtd),
-        fmt(ag.bruto) + " kg",
-        fmt(ag.tara) + " kg",
-        fmt(ag.liquido) + " kg"
-      ];
-    });
-
-    // ---------- Cartões de resumo (Itens / Bruto / Líquido) ----------
-    var resumo = [
-      ["ITENS", String(lista.length), [15, 122, 56]],
-      ["BRUTO", fmt(somaBruto) + " kg", [153, 27, 27]],
-      ["LÍQUIDO", fmt(somaLiquido) + " kg", [153, 27, 27]]
-    ];
-    var resW = (pageWidth - margin * 2 - 20) / 3;
-    resumo.forEach(function(r, idx){
-      var x = margin + idx * (resW + 10);
-      doc.setFillColor(229, 246, 236);
-      doc.roundedRect(x, 104, resW, 46, 8, 8, "F");
-      doc.setTextColor(15, 122, 56);
-      doc.setFont("helvetica", "bold");
-      doc.setFontSize(8.5);
-      doc.text(r[0], x + 13, 121);
-      doc.setTextColor(r[2][0], r[2][1], r[2][2]);
-      doc.setFontSize(14.5);
-      doc.text(r[1], x + 13, 141);
-    });
-
-    // ---------- Referência das taras usadas (para ter noção do desconto aplicado) ----------
-    var taraY = 162;
-    doc.setFillColor(244, 248, 245);
-    doc.roundedRect(margin, taraY, pageWidth - margin * 2, 26, 7, 7, "F");
-    doc.setFont("helvetica", "bold");
-    doc.setFontSize(8.5);
-    doc.setTextColor(15, 122, 56);
-    doc.text("TARAS CADASTRADAS", margin + 12, taraY + 11);
+    doc.setFontSize(12.5);
+    doc.setTextColor(147, 197, 253);
+    doc.text("PESACERTO  |  Relatório de pesagem", textoX, 60);
     doc.setFont("helvetica", "normal");
     doc.setFontSize(9.5);
-    doc.setTextColor(60, 70, 64);
-    doc.text(
-      "Bandeja grande: " + fmt(taras.grande) + " kg    ·    Bandeja pequena: " + fmt(taras.pequena) + " kg",
-      margin + 12, taraY + 21
-    );
+    doc.setTextColor(203, 220, 250);
+    doc.text("Itens em ordem alfabética (A–Z)", textoX, 76);
+    doc.setFont("helvetica", "bold");
+    doc.setFontSize(11);
+    doc.setTextColor(255, 255, 255);
+    doc.text(t.data, pageWidth - margin, 42, { align: "right" });
+    doc.setFont("helvetica", "normal");
+    doc.setFontSize(9.5);
+    doc.setTextColor(203, 220, 250);
+    doc.text("Fechamento às " + t.hora, pageWidth - margin, 58, { align: "right" });
 
-    var tabelaY = taraY + 42;
-    if(linhas.length === 0){
-      doc.setTextColor(20, 23, 28);
-      doc.setFont("helvetica", "normal");
-      doc.setFontSize(12);
+    // ---------- Dados em ordem alfabética ----------
+    var ordenada = lista.slice().sort(function(a, b){
+      return String(a.nome || "").localeCompare(String(b.nome || ""), "pt-BR", { sensitivity: "base", numeric: true });
+    });
+    var somaBruto = 0, somaTara = 0, somaLiquido = 0, totPes = 0, nAtencao = 0, maior = null;
+    var ags = ordenada.map(function(item){
+      var ag = agregados(item);
+      somaBruto += ag.bruto; somaTara += ag.tara; somaLiquido += ag.liquido; totPes += ag.qtd;
+      if(item.status === "atencao") nAtencao++;
+      if(!maior || ag.liquido > maior.l) maior = { n: item.nome || "(sem nome)", l: ag.liquido };
+      return ag;
+    });
+
+    // ---------- Cartões de resumo ----------
+    var cards = [
+      ["ITENS", String(ordenada.length), totPes + (totPes === 1 ? " pesagem" : " pesagens")],
+      ["PESO BRUTO", fmt(somaBruto) + " kg", "antes das taras"],
+      ["TARA TOTAL", fmt(somaTara) + " kg", "descontado"],
+      ["PESO LÍQUIDO", fmt(somaLiquido) + " kg", nAtencao ? nAtencao + " em atenção" : "tudo conferido"]
+    ];
+    var cw = (pageWidth - margin * 2 - 30) / 4;
+    cards.forEach(function(c, idx){
+      var x = margin + idx * (cw + 10), dest = idx === 3;
+      doc.setFillColor(dest ? MARINHO[0] : 232, dest ? MARINHO[1] : 240, dest ? MARINHO[2] : 254);
+      doc.roundedRect(x, 108, cw, 56, 9, 9, "F");
+      if(!dest){ doc.setFillColor(AZUL[0], AZUL[1], AZUL[2]); doc.roundedRect(x, 108, 4, 56, 2, 2, "F"); }
+      doc.setFont("helvetica", "bold"); doc.setFontSize(7.5);
+      doc.setTextColor(dest ? 147 : AZUL[0], dest ? 197 : AZUL[1], dest ? 253 : AZUL[2]);
+      doc.text(c[0], x + 12, 123);
+      doc.setFontSize(13.5);
+      doc.setTextColor(dest ? 255 : TXT[0], dest ? 255 : TXT[1], dest ? 255 : TXT[2]);
+      doc.text(c[1], x + 12, 142);
+      doc.setFont("helvetica", "normal"); doc.setFontSize(7.5);
+      doc.setTextColor(dest ? 190 : MUTED[0], dest ? 210 : MUTED[1], dest ? 245 : MUTED[2]);
+      doc.text(c[2], x + 12, 155);
+    });
+
+    // ---------- Faixa de informações (taras + mais pesado) ----------
+    var infoY = 176;
+    doc.setFillColor(244, 247, 252);
+    doc.setDrawColor(225, 232, 243); doc.setLineWidth(0.6);
+    doc.roundedRect(margin, infoY, pageWidth - margin * 2, 34, 8, 8, "FD");
+    doc.setFont("helvetica", "bold"); doc.setFontSize(7.5); doc.setTextColor(AZUL[0], AZUL[1], AZUL[2]);
+    doc.text("TARAS CADASTRADAS", margin + 12, infoY + 13);
+    doc.text("ITEM MAIS PESADO", margin + 270, infoY + 13);
+    doc.setFont("helvetica", "normal"); doc.setFontSize(9.5); doc.setTextColor(TXT[0], TXT[1], TXT[2]);
+    doc.text("Grande " + fmt(taras.grande) + " kg   |   Pequena " + fmt(taras.pequena) + " kg", margin + 12, infoY + 26);
+    var mn = maior ? maior.n : "—"; if(mn.length > 24) mn = mn.slice(0, 23) + "…";
+    doc.text(maior ? mn + " (" + fmt(maior.l) + " kg)" : "—", margin + 270, infoY + 26);
+
+    var tabelaY = infoY + 50;
+    if(ordenada.length === 0){
+      doc.setTextColor(TXT[0], TXT[1], TXT[2]); doc.setFont("helvetica", "normal"); doc.setFontSize(12);
       doc.text("Nenhuma pesagem registrada.", margin, tabelaY);
     } else {
+      // corpo: separador por letra + linhas do item
+      var body = [], meta = [], letraAtual = "", n = 0;
+      ordenada.forEach(function(item, idx){
+        var nm = String(item.nome || "(sem nome)");
+        var L = nm.normalize("NFD").replace(/[\u0300-\u036f]/g, "").charAt(0).toUpperCase();
+        if(!/[A-Z]/.test(L)) L = "#";
+        if(L !== letraAtual){
+          letraAtual = L;
+          body.push([{ content: L, colSpan: 8, styles: { fillColor: [222, 233, 252], textColor: AZUL, fontStyle: "bold", fontSize: 9, cellPadding: { top: 4, bottom: 4, left: 8, right: 4 } } }]);
+          meta.push(null);
+        }
+        var ag = ags[idx]; n++;
+        var st = item.status === "atencao" ? "ATENÇÃO" : (item.status === "ok" ? "OK" : "—");
+        body.push([String(n), item.codigo || "—", nm, String(ag.qtd), fmt(ag.bruto) + " kg", fmt(ag.tara) + " kg", fmt(ag.liquido) + " kg", st]);
+        meta.push(item.status || "");
+      });
       doc.autoTable({
         startY: tabelaY,
-        margin: { left: margin, right: margin },
-        head: [["Código", "Item", "Pesagens", "Bruto", "Tara", "Líquido"]],
-        body: linhas,
-        foot: [["", "TOTAL GERAL", String(lista.length), fmt(somaBruto) + " kg", "", fmt(somaLiquido) + " kg"]],
-        theme: "grid",
-        styles: { font: "helvetica", fontSize: 10, cellPadding: 7, textColor: [20, 23, 28], lineColor: [226, 229, 235], lineWidth: 0.6, valign: "middle" },
-        headStyles: { fillColor: [15, 122, 56], textColor: [255, 255, 255], fontStyle: "bold", fontSize: 10 },
-        footStyles: { fillColor: [201, 238, 215], textColor: [15, 122, 56], fontStyle: "bold" },
-        alternateRowStyles: { fillColor: [247, 249, 247] },
-        didParseCell: function(d){
-          // pesos (Bruto, Tara, Líquido) em vermelho para destacar
-          if(d.section === "body" && [3, 4, 5].indexOf(d.column.index) > -1){
-            d.cell.styles.textColor = [153, 27, 27];
-            d.cell.styles.fontStyle = "bold";
-          }
-          if(d.section === "body" && lista[d.row.index]){
-            var st = lista[d.row.index].status;
-            if(st === "atencao"){ d.cell.styles.textColor = [180, 83, 9]; }
-            else if(st === "ok"){ d.cell.styles.textColor = [15, 122, 56]; }
-          }
-        },
+        margin: { left: margin, right: margin, bottom: 52 },
+        head: [["#", "Cód.", "Item", "Pesag.", "Bruto", "Tara", "Líquido", "Status"]],
+        body: body,
+        foot: [["", "", "TOTAL GERAL", String(totPes), fmt(somaBruto) + " kg", fmt(somaTara) + " kg", fmt(somaLiquido) + " kg", ""]],
+        showFoot: "lastPage",
+        theme: "plain",
+        styles: { font: "helvetica", fontSize: 9.5, cellPadding: { top: 6.5, bottom: 6.5, left: 6, right: 6 }, textColor: TXT, lineColor: [225, 232, 243], lineWidth: { bottom: 0.5 }, valign: "middle", overflow: "linebreak" },
+        headStyles: { fillColor: MARINHO, textColor: [255, 255, 255], fontStyle: "bold", fontSize: 9, lineWidth: 0 },
+        footStyles: { fillColor: MARINHO, textColor: [255, 255, 255], fontStyle: "bold", fontSize: 10, lineWidth: 0 },
         columnStyles: {
-          0: { cellWidth: 60 },
-          2: { cellWidth: 55, halign: "center" },
-          3: { cellWidth: 70, halign: "right" },
-          4: { cellWidth: 60, halign: "right" },
-          5: { cellWidth: 75, halign: "right" }
+          0: { cellWidth: 24, halign: "center", textColor: MUTED },
+          1: { cellWidth: 46, fontStyle: "bold", textColor: AZUL },
+          3: { cellWidth: 42, halign: "center" },
+          4: { cellWidth: 66, halign: "right" },
+          5: { cellWidth: 58, halign: "right", textColor: MUTED },
+          6: { cellWidth: 72, halign: "right", fontStyle: "bold", textColor: [12, 86, 60] },
+          7: { cellWidth: 52, halign: "center", fontStyle: "bold", fontSize: 8 }
+        },
+        didParseCell: function(d){
+          if(d.section === "foot"){ if([4, 5, 6].indexOf(d.column.index) > -1) d.cell.styles.halign = "right"; if(d.column.index === 3) d.cell.styles.halign = "center"; }
+          if(d.section === "head"){ if([4, 5, 6].indexOf(d.column.index) > -1) d.cell.styles.halign = "right"; if([0, 3, 7].indexOf(d.column.index) > -1) d.cell.styles.halign = "center"; }
+          if(d.section !== "body") return;
+          var m = meta[d.row.index];
+          if(m === null || m === undefined) return;
+          if(m === "atencao") d.cell.styles.fillColor = [254, 243, 224];
+          else if(d.row.index % 2 === 0) d.cell.styles.fillColor = [248, 250, 254];
+          if(d.column.index === 7){ d.cell.styles.textColor = m === "atencao" ? [180, 83, 9] : (m === "ok" ? [15, 122, 56] : MUTED); }
         }
       });
     }
 
-    var alt = doc.internal.pageSize.getHeight();
-    doc.setDrawColor(22, 163, 74);
-    doc.setLineWidth(2);
-    doc.line(margin, alt - 38, pageWidth - margin, alt - 38);
-    doc.setTextColor(102, 110, 122);
-    doc.setFont("helvetica", "normal");
-    doc.setFontSize(9);
-    doc.text("Documento gerado automaticamente pelo PesaCerto — dados armazenados apenas no navegador do balcão.", margin, doc.internal.pageSize.getHeight() - 24);
+    // ---------- Rodapé em todas as páginas ----------
+    var altura = doc.internal.pageSize.getHeight(), pgs = doc.getNumberOfPages();
+    var versao = (typeof PESACERTO_VERSAO !== "undefined") ? " v" + PESACERTO_VERSAO : "";
+    for(var pg = 1; pg <= pgs; pg++){
+      doc.setPage(pg);
+      doc.setDrawColor(AZUL[0], AZUL[1], AZUL[2]); doc.setLineWidth(1.6);
+      doc.line(margin, altura - 40, pageWidth - margin, altura - 40);
+      doc.setFont("helvetica", "normal"); doc.setFontSize(8.5); doc.setTextColor(MUTED[0], MUTED[1], MUTED[2]);
+      doc.text("Gerado pelo PesaCerto" + versao + " em " + t.data + " às " + t.hora + " — dados armazenados apenas neste navegador.", margin, altura - 26);
+      doc.setFont("helvetica", "bold"); doc.setTextColor(AZUL[0], AZUL[1], AZUL[2]);
+      doc.text("Página " + pg + " de " + pgs, pageWidth - margin, altura - 26, { align: "right" });
+    }
 
     doc.save(nomeArquivoBase() + ".pdf");
     return true;
@@ -1375,6 +1415,19 @@
     if(e.key === "Enter"){ e.preventDefault(); tentarAutoPreencher(); }
   });
   pesoInput.addEventListener("input", updatePreview);
+  (function(){
+    var u = document.getElementById("pesoUnidade"), ph = document.getElementById("pesoHint");
+    if(!u) return;
+    try{ var sv = localStorage.getItem("pesacerto_unidade"); if(sv === "g" || sv === "kg") u.value = sv; }catch(e){}
+    function atualizaUnidade(){
+      var kg = u.value === "kg";
+      pesoInput.placeholder = kg ? "ex.: 101,9" : "ex.: 1500";
+      if(ph) ph.textContent = kg ? "Como no visor: 101,9 = 101,9 kg" : "Em gramas: 1500 = 1,5 kg";
+      updatePreview();
+    }
+    u.addEventListener("change", function(){ try{ localStorage.setItem("pesacerto_unidade", u.value); }catch(e){} atualizaUnidade(); });
+    atualizaUnidade();
+  })();
   qtdInput.addEventListener("input", updatePreview);
   qtdInput.addEventListener("blur", function(){ qtdInput.value = getQtd(); updatePreview(); });
   qtdMenos.addEventListener("click", function(){ setQtd(getQtd() - 1); });

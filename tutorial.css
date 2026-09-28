@@ -1,23 +1,23 @@
 :root{
-  --bg:#f2f5f3;--card:#fff;--soft:#f6f8f7;--line:#e0e7e2;
-  --ink:#13201a;--ink-2:#465850;--ink-3:#71827a;
-  --brand:#16a34a;--brand-2:#15803d;--brand-soft:#e5f5ea;--brand-line:#b7e2c5;
+  --bg:#f1f5fb;--card:#fff;--soft:#f5f8fd;--line:#e1e8f3;
+  --ink:#0f1d3a;--ink-2:#4a5b7a;--ink-3:#6b7b99;
+  --brand:#2563eb;--brand-2:#1d4ed8;--brand-soft:#e8f0fe;--brand-line:#cfe0fd;
   --warn:#b45309;--warn-soft:#fef3c7;--warn-line:#f5d98a;
   --red:#dc2626;--red-soft:#fee9e9;--red-line:#f5b5b5;
   --shadow:0 1px 2px rgba(16,32,24,.05),0 8px 24px rgba(16,32,24,.06);
   --f-d:'Sora',system-ui,sans-serif;--f-b:'Inter',system-ui,sans-serif;--f-m:'IBM Plex Mono',ui-monospace,monospace;
 }
 @media(prefers-color-scheme:dark){:root:not([data-theme="light"]){
-  --bg:#0a0f0c;--card:#131a16;--soft:#0e1411;--line:#233029;
-  --ink:#eef4f0;--ink-2:#b3c1b9;--ink-3:#7f9187;
-  --brand:#22c55e;--brand-2:#4ade80;--brand-soft:rgba(34,197,94,.13);--brand-line:rgba(74,222,128,.32);
+  --bg:#071226;--card:#0d1b36;--soft:#0a1630;--line:#1a2c50;
+  --ink:#e8efff;--ink-2:#b3c3e0;--ink-3:#8397bd;
+  --brand:#3b82f6;--brand-2:#60a5fa;--brand-soft:rgba(59,130,246,.15);--brand-line:rgba(96,165,250,.35);
   --warn:#fbbf24;--warn-soft:rgba(251,191,36,.12);--warn-line:rgba(251,191,36,.3);
   --red:#f87171;--red-soft:rgba(248,113,113,.12);--red-line:rgba(248,113,113,.35);
   --shadow:0 8px 24px rgba(0,0,0,.4);}}
 :root[data-theme="dark"]{
-  --bg:#0a0f0c;--card:#131a16;--soft:#0e1411;--line:#233029;
-  --ink:#eef4f0;--ink-2:#b3c1b9;--ink-3:#7f9187;
-  --brand:#22c55e;--brand-2:#4ade80;--brand-soft:rgba(34,197,94,.13);--brand-line:rgba(74,222,128,.32);
+  --bg:#071226;--card:#0d1b36;--soft:#0a1630;--line:#1a2c50;
+  --ink:#e8efff;--ink-2:#b3c3e0;--ink-3:#8397bd;
+  --brand:#3b82f6;--brand-2:#60a5fa;--brand-soft:rgba(59,130,246,.15);--brand-line:rgba(96,165,250,.35);
   --warn:#fbbf24;--warn-soft:rgba(251,191,36,.12);--warn-line:rgba(251,191,36,.3);
   --red:#f87171;--red-soft:rgba(248,113,113,.12);--red-line:rgba(248,113,113,.35);
   --shadow:0 8px 24px rgba(0,0,0,.4);}
@@ -59,8 +59,8 @@ th{background:var(--soft);font-weight:700}
 .calc label{display:flex;flex-direction:column;gap:4px;font:600 13px var(--f-b);color:var(--ink-2)}
 input,select{font:500 16px var(--f-b);padding:11px 12px;border:1.5px solid var(--line);border-radius:12px;background:var(--card);color:var(--ink);width:100%}
 input:focus,select:focus{outline:none;border-color:var(--brand)}
-.out{grid-column:1/-1;background:#0c1611;border-radius:14px;padding:14px 18px;display:flex;align-items:baseline;gap:8px;color:#5eeb95}
-.out span{font:600 13px var(--f-b);color:#9bd9b4;margin-right:auto}
+.out{grid-column:1/-1;background:#0a2050;border-radius:14px;padding:14px 18px;display:flex;align-items:baseline;gap:8px;color:#93c5fd}
+.out span{font:600 13px var(--f-b);color:#bcd3ff;margin-right:auto}
 .out b{font:700 34px var(--f-m)}
 details{border:1px solid var(--line);border-radius:12px;margin:8px 0;background:var(--soft);padding:0 14px}
 summary{cursor:pointer;font-weight:600;padding:12px 0}
@@ -79,10 +79,14 @@ details[open]{padding-bottom:12px}
 @media(max-width:520px){.theme-switch button span{display:none}}
 .theme-anim,.theme-anim *{transition:background-color .4s,border-color .4s,color .4s !important}
 .topbar{position:sticky}
-.topbar::after{content:"";position:absolute;left:0;right:0;bottom:-1px;height:3px;background:linear-gradient(90deg,#7f1d1d 0,#dc2626 25%,#ff5a4d 50%,#dc2626 75%,#7f1d1d 100%);background-size:420px 100%;animation:meat 4.5s linear infinite;box-shadow:0 0 12px rgba(220,38,38,.55)}
+.topbar::after{content:"";position:absolute;left:0;right:0;bottom:-1px;height:3px;background:linear-gradient(90deg,#1e3a8a 0,#2563eb 25%,#60a5fa 50%,#2563eb 75%,#1e3a8a 100%);background-size:420px 100%;animation:meat 4.5s linear infinite;box-shadow:0 0 12px rgba(37,99,235,.55)}
 @keyframes meat{to{background-position:420px 0}}
 .progress{top:58px}
 .step{animation:rise .5s cubic-bezier(.2,.8,.3,1) both;transition:transform .3s,border-color .3s}
 .step:hover{transform:translateY(-2px);border-color:var(--brand-line)}
 @keyframes rise{from{opacity:0;transform:translateY(14px)}to{opacity:1;transform:none}}
 @media(prefers-reduced-motion:reduce){*,*::before,*::after{animation:none !important}}
+
+.ver{font:700 11px var(--f-m);color:var(--brand-2);background:var(--brand-soft);border:1px solid var(--brand-line);padding:2px 9px;border-radius:999px;margin-left:8px;vertical-align:middle}
+.calc .tarafield{grid-column:1/-1}
+h1 .ver{font-size:12px}

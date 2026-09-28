@@ -5,13 +5,15 @@
 <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
 <title>Como usar o PesaCerto</title>
 <link rel="icon" href="logo.png">
+<meta name="theme-color" content="#0a1f44">
 <link href="https://fonts.googleapis.com/css2?family=Sora:wght@600;700;800&family=Inter:wght@400;500;600;700&family=IBM+Plex+Mono:wght@500;700&display=swap" rel="stylesheet">
+<script src="version.js"></script>
 <script src="theme.js"></script>
 <link rel="stylesheet" href="tutorial.css">
 </head>
 <body>
 <header class="topbar"><div class="wrap">
-  <b class="t">PesaCerto <span>· Tutorial</span></b>
+  <b class="t">PesaCerto <span>· Tutorial</span><i class="ver" data-versao>v</i></b>
   <div class="top-actions"><div class="theme-switch" role="group" aria-label="Tema do site"><i class="thumb"></i><button type="button" data-theme-set="light" aria-pressed="false" aria-label="Tema claro">☀️<span>Claro</span></button><button type="button" data-theme-set="dark" aria-pressed="false" aria-label="Tema escuro">🌙<span>Escuro</span></button></div><a class="back" href="index.html">← Abrir o site</a></div>
 </div></header>
 
@@ -20,147 +22,172 @@
 <main class="wrap">
   <section class="hero">
     <h1>Como usar o PesaCerto, passo a passo</h1>
-    <p>O PesaCerto calcula o <b>peso líquido</b> da carne (peso da balança menos a bandeja) e <b>soma automaticamente</b> todas as pesagens de um mesmo código.</p>
+    <p>O PesaCerto calcula o <b>peso líquido</b> da carne (peso da balança menos a bandeja), <b>soma automaticamente</b> todas as pesagens de um mesmo código e mostra tudo num <b>Dashboard</b>. Este tutorial está atualizado para a <b data-versao>versão atual</b>.</p>
     <nav class="toc" aria-label="Índice" id="toc"></nav>
   </section>
 
   <section class="step" id="s1">
     <h2><em>1</em> Conhecendo a tela</h2>
-    <p>O site tem <b>três telas</b>, que você troca pelos botões do menu:</p>
+    <p>O menu tem <b>quatro telas</b> (no PC fica na lateral; no celular, na barra de baixo):</p>
     <ul class="cards">
-      <li><b>⚖️ Pesar</b>Onde você registra cada pesagem.</li>
-      <li><b>📋 Lista</b>Onde vê os totais, copia, baixa o PDF e encerra.</li>
-      <li><b>⚙️ Tara</b>Onde define o peso das bandejas.</li>
+      <li><b>🏠 Dashboard</b>O resumo do seu dia. É a primeira tela que abre.</li>
+      <li><b>⚖️ Nova Pesagem</b>Onde você registra cada pesagem.</li>
+      <li><b>📋 Pesagens de Hoje</b>A lista com os totais, copiar, PDF e encerrar.</li>
+      <li><b>⚙️ Configurações</b>Taras, códigos (produtos) e preferências.</li>
     </ul>
-    <p>Na barra de baixo aparecem sempre os totais: <b>Itens</b>, <b>Bruto</b> e <b>Líquido</b>. No topo da tela também aparece sempre o <b>líquido total</b> da lista.</p>
-    <p>No topo você ainda encontra o ícone <b>⚙️</b> (configurações), o interruptor <b>☀️ / 🌙</b> de tema claro/escuro e o link <b>📖 Como usar</b> — veja o passo 10 para mais detalhes.</p>
-    <div class="note info">💾 Tudo fica salvo <b>somente neste navegador</b>. Se trocar de celular ou limpar os dados do navegador, use o backup de códigos (passo 8).</div>
+    <p>Na <b>barra azul do topo</b> aparecem o nome do sistema, o aviso <b>Sistema online</b> (vira "Modo offline" se a internet cair — o site continua funcionando) e a <b>versão</b> do site. Abaixo dela fica sempre o <b>líquido total</b> da lista, e na barra de baixo os totais de <b>Itens</b>, <b>Bruto</b> e <b>Líquido</b>.</p>
+    <div class="note info">💾 Tudo fica salvo <b>somente neste navegador</b>. Se trocar de celular ou limpar os dados do navegador, use o backup de códigos (passo 9).</div>
   </section>
 
   <section class="step" id="s2">
-    <h2><em>2</em> Antes de tudo: configure a tara</h2>
+    <h2><em>2</em> O Dashboard</h2>
+    <p>Todos os números vêm das suas pesagens reais e se atualizam sozinhos:</p>
+    <ul class="cards">
+      <li><b>Quatro cartões</b>Pesagens hoje, Peso total do dia (com % comparado a ontem), Produtos cadastrados e Pesagens corretas (as que não estão em atenção).</li>
+      <li><b>Nova Pesagem</b>Botão azul grande que leva direto para a tela de pesar.</li>
+      <li><b>Pesquisar Produto</b>Digite parte do nome ou do código e toque no resultado: o código já vai preenchido na pesagem.</li>
+      <li><b>Últimas Pesagens</b>As 5 mais recentes, com data e hora, bruto, tara, líquido e status (OK ou Atenção).</li>
+      <li><b>Peso em Tempo Real</b>Mostra bruto, tara e líquido do que você está digitando. O botão <b>Salvar Pesagem</b> adiciona à lista.</li>
+      <li><b>Produtos Mais Pesados (Hoje)</b>Ranking dos 5 itens com mais líquido no dia, com barras.</li>
+      <li><b>Lista Atual e Acesso Rápido</b>Total de itens, líquido da lista, itens em atenção e atalhos para as outras telas.</li>
+    </ul>
+  </section>
+
+  <section class="step" id="s3">
+    <h2><em>3</em> Antes de tudo: configure a tara</h2>
     <p>Faça isso <b>uma única vez</b>, e de novo só se trocar o tipo de bandeja.</p>
     <ol>
-      <li>Toque em <b>⚙️ Tara</b>.</li>
+      <li>Toque em <b>⚙️ Configurações</b>.</li>
       <li>Em <b>Bandeja grande</b>, digite o peso dela <b>em kg</b>. Ex.: <code>0,025</code> (25 g).</li>
       <li>Em <b>Bandeja pequena</b>, faça o mesmo. Ex.: <code>0,012</code>.</li>
       <li>Toque em <b>Salvar tara</b>. Aparece o aviso "⚖️ Tara salva".</li>
     </ol>
-    <div class="note warn">⚠️ Na aba Tara o valor é em <b>kg</b> (use vírgula ou ponto). Já a tara personalizada, na tela Pesar, é em <b>gramas</b>.</div>
-  </section>
-
-  <section class="step" id="s3">
-    <h2><em>3</em> Fazendo uma pesagem</h2>
-    <ol>
-      <li><b>Código:</b> na tela Pesar, digite o código da carne. Após uma pausa curta o site procura o código.
-        <ul>
-          <li><span class="tag ok">Código já cadastrado</span> O nome e a bandeja são preenchidos sozinhos e o cursor pula para o peso. Se esse código já tiver pesagens, aparece um aviso <b>🕘 Última: ...</b> com a última pesagem e o total já pesado hoje.</li>
-          <li><span class="tag no">Código não cadastrado</span> Digite o <b>nome</b> e toque em <b>➕ Registrar este código</b>. Na próxima vez ele será reconhecido.</li>
-        </ul>
-      </li>
-      <li><b>Bandeja / tara:</b> escolha o tipo (veja o passo 4).</li>
-      <li><b>Peso na balança:</b> digite <b>em gramas, sem vírgula</b>.
-        <table>
-          <tr><th>Na balança</th><th>Digite</th></tr>
-          <tr><td>1 kg</td><td><code>1000</code></td></tr>
-          <tr><td>1,5 kg</td><td><code>1500</code></td></tr>
-          <tr><td>0,850 kg</td><td><code>850</code></td></tr>
-        </table>
-      </li>
-      <li>Confira o painel verde <b>"Peso líquido desta pesagem"</b>. Ele já mostra o peso menos a bandeja.</li>
-      <li>Toque em <b>＋ Adicionar pesagem</b>. Aparece "✅ Pesagem adicionada" e o formulário é limpo.</li>
-    </ol>
-    <div class="note warn">⚠️ Se o peso parecer estranho (muito alto, muito baixo, ou bem diferente da média já registrada para esse código), o site mostra um aviso <b>antes</b> de adicionar, com as opções <b>Corrigir peso</b> ou <b>Adicionar mesmo assim</b>.</div>
-    <div class="note info">↩️ Depois de adicionar, uma barra <b>"Desfazer"</b> aparece por alguns segundos na parte de baixo da tela. Toque nela se adicionou a pesagem por engano.</div>
-    <div class="note ok">✅ Pesou o mesmo código de novo? Basta repetir. O site <b>soma tudo no mesmo item</b> da lista.</div>
+    <div class="note info">✅ Agora <b>todas</b> as taras são em <b>kg</b> (bandejas, tara personalizada e tara extra do "Combinar"). Pode usar vírgula ou ponto.</div>
   </section>
 
   <section class="step" id="s4">
-    <h2><em>4</em> Escolhendo a bandeja certa</h2>
+    <h2><em>4</em> Fazendo uma pesagem</h2>
+    <ol>
+      <li><b>Código:</b> em <b>Nova Pesagem</b>, digite o código da carne. Após uma pausa curta o site procura o código.
+        <ul>
+          <li><span class="tag ok">Código já cadastrado</span> O nome e a bandeja são preenchidos sozinhos e o cursor pula para o peso. Se já houver pesagens, aparece <b>🕘 Última: ...</b> com a última pesagem e o total do dia.</li>
+          <li><span class="tag no">Código não cadastrado</span> Digite o <b>nome</b> e toque em <b>➕ Registrar este código</b>. Na próxima vez ele será reconhecido.</li>
+        </ul>
+      </li>
+      <li><b>Bandeja / tara:</b> escolha o tipo (veja o passo 5).</li>
+      <li><b>Peso na balança:</b> digite <b>exatamente como aparece no visor</b>, em <b>kg</b>. O seletor ao lado do campo começa em <b>kg</b> e pode ser trocado para <b>g</b>; o site lembra a sua escolha.
+        <table>
+          <tr><th>No visor da balança</th><th>Com "kg" digite</th><th>Com "g" digite</th></tr>
+          <tr><td>101,9 kg</td><td><code>101,9</code></td><td><code>101900</code></td></tr>
+          <tr><td>1,5 kg</td><td><code>1,5</code></td><td><code>1500</code></td></tr>
+          <tr><td>0,850 kg</td><td><code>0,850</code></td><td><code>850</code></td></tr>
+        </table>
+      </li>
+      <li>Confira o painel azul <b>"Peso líquido desta pesagem"</b>. Ele já mostra o peso menos a bandeja.</li>
+      <li>Toque em <b>＋ Adicionar pesagem</b>. Aparece "✅ Pesagem adicionada" e o formulário é limpo.</li>
+    </ol>
+    <div class="note warn">⚠️ Se o peso parecer estranho (muito alto, muito baixo, ou bem diferente da média do código), o site avisa <b>antes</b> de adicionar, com <b>Corrigir peso</b> ou <b>Adicionar mesmo assim</b>.</div>
+    <div class="note info">↩️ Depois de adicionar, uma barra <b>"Desfazer"</b> aparece por alguns segundos. Toque nela se adicionou por engano.</div>
+    <div class="note ok">✅ Pesou o mesmo código de novo? Basta repetir. O site <b>soma tudo no mesmo item</b> da lista.</div>
+  </section>
+
+  <section class="step" id="s5">
+    <h2><em>5</em> Escolhendo a bandeja certa</h2>
     <table>
       <tr><th>Opção</th><th>Quando usar</th><th>O que digitar</th></tr>
       <tr><td>Bandeja grande</td><td>Uma ou mais bandejas grandes iguais</td><td>Ajuste a <b>Quantidade de bandejas</b> com − / +. Ex.: 2 = tara × 2</td></tr>
       <tr><td>Bandeja pequena</td><td>Uma ou mais bandejas pequenas iguais</td><td>Igual à anterior</td></tr>
-      <tr><td>Combinar</td><td>Grande + pequena + algo extra na mesma pesagem</td><td>Quantidade de grandes, de pequenas e uma tara extra em gramas. Aceita soma: <code>4+4+10</code> = 18 g</td></tr>
-      <tr><td>Tara personalizada</td><td>Embalagem diferente das bandejas</td><td>Peso dela em <b>gramas</b>. Ex.: <code>4</code> = 4 g</td></tr>
+      <tr><td>Combinar</td><td>Grande + pequena + algo extra</td><td>Quantidade de grandes, de pequenas e uma tara extra em <b>kg</b>, somando com o botão <b>+</b></td></tr>
+      <tr><td>Tara personalizada</td><td>Embalagem ou caixa diferente das bandejas</td><td>O peso em <b>kg</b>, somando quantos valores quiser com o botão <b>+</b></td></tr>
       <tr><td>Sem bandeja</td><td>Carne pesada direto na balança</td><td>Nada, a tara é 0 kg</td></tr>
     </table>
-  </section>
-
-  <section class="step" id="s5">
-    <h2><em>5</em> Teste na prática (calculadora)</h2>
-    <p>Simule uma pesagem sem mexer nos seus dados. As taras abaixo são só de exemplo.</p>
-    <div class="calc">
-      <label>Peso na balança (g)<input id="cPeso" type="number" inputmode="numeric" value="1500" min="0"></label>
-      <label>Bandeja
-        <select id="cTipo">
-          <option value="25">Grande (exemplo: 25 g)</option>
-          <option value="12">Pequena (exemplo: 12 g)</option>
-          <option value="0">Sem bandeja</option>
-        </select>
-      </label>
-      <label>Quantidade<input id="cQtd" type="number" inputmode="numeric" value="1" min="1"></label>
-      <div class="out"><span>Peso líquido</span><b id="cRes">0,000</b><small>kg</small></div>
-    </div>
-    <p class="mini">Conta: (peso − tara × quantidade) ÷ 1000.</p>
+    <h3>Somando várias taras com o botão +</h3>
+    <p>Na <b>Tara personalizada</b> digite o primeiro valor e toque no botão <b>+</b> ao lado do campo; digite o próximo, toque em <b>+</b> de novo, e assim por diante, <b>sem limite</b>. Também dá para digitar o sinal <code>+</code> direto no teclado.</p>
+    <table>
+      <tr><th>Você digita</th><th>Tara total</th></tr>
+      <tr><td><code>4+4+0,932+0,123</code></td><td>9,055 kg</td></tr>
+      <tr><td><code>0,5+0,25</code></td><td>0,750 kg</td></tr>
+    </table>
+    <p class="mini">Abaixo do campo aparece "Total da tara: ..." enquanto você digita. Para cada código cadastrado com tara personalizada, a conta completa fica salva.</p>
   </section>
 
   <section class="step" id="s6">
-    <h2><em>6</em> Trabalhando com a Lista</h2>
+    <h2><em>6</em> Teste na prática (calculadora)</h2>
+    <p>Simule uma pesagem sem mexer nos seus dados. Pode usar <code>+</code> na tara.</p>
+    <div class="calc">
+      <label>Peso na balança<input id="cPeso" type="text" inputmode="decimal" value="101,9"></label>
+      <label>Unidade
+        <select id="cUn"><option value="kg">kg</option><option value="g">g</option></select>
+      </label>
+      <label class="tarafield">Tara em kg (some com +)<input id="cTara" type="text" inputmode="decimal" value="4+4+0,932+0,123"></label>
+      <div class="out"><span>Peso líquido</span><b id="cRes">0,000</b><small>kg</small></div>
+    </div>
+    <p class="mini">Conta: peso da balança − soma das taras.</p>
+  </section>
+
+  <section class="step" id="s7">
+    <h2><em>7</em> Trabalhando com as Pesagens de Hoje</h2>
     <ol>
-      <li>Toque em <b>📋 Lista</b>. Cada código aparece com <b>Bruto</b>, <b>Tara</b> e <b>Líquido</b> somados.</li>
+      <li>Toque em <b>📋 Pesagens de Hoje</b>. Cada código aparece com <b>Bruto</b>, <b>Tara</b> e <b>Líquido</b> somados.</li>
       <li>Abra o item para ver <b>cada pesagem</b> separada, com data e hora.</li>
       <li><b>Corrigir o nome:</b> toque no nome do item, edite e confirme.</li>
-      <li><b>Remover uma pesagem errada:</b> use o botão de remover na pesagem. O site pede a senha.</li>
+      <li><b>Marcar o item:</b> ✔️ conferido ou ⚠️ atenção. Isso aparece no Dashboard e no PDF.</li>
+      <li><b>Remover uma pesagem errada:</b> use o botão de remover. O site pede a senha.</li>
       <li><b>Remover o item inteiro:</b> mesma coisa, no item. Ele vai para a Lixeira.</li>
     </ol>
     <div class="note info">🔒 A senha para excluir é <b>1234</b> e aparece na própria janela de confirmação.</div>
   </section>
 
-  <section class="step" id="s7">
-    <h2><em>7</em> Lixeira: recuperando o que foi excluído</h2>
+  <section class="step" id="s8">
+    <h2><em>8</em> Lixeira: recuperando o que foi excluído</h2>
     <ul>
       <li>Nada é apagado de vez na hora. Itens excluídos ficam na <b>🗑️ Lixeira por 7 dias</b>.</li>
-      <li>Toque em <b>🗑️ Lixeira</b> no topo da Lista para abri-la.</li>
+      <li>Toque em <b>🗑️ Lixeira</b> no topo da lista para abri-la.</li>
       <li>Escolha o item e restaure para ele voltar à lista.</li>
       <li><b>Esvaziar lixeira</b> apaga tudo de forma definitiva (pede a senha e não tem volta).</li>
     </ul>
   </section>
 
-  <section class="step" id="s8">
-    <h2><em>8</em> Finalizando e guardando</h2>
+  <section class="step" id="s9">
+    <h2><em>9</em> Finalizando e guardando</h2>
     <ul class="cards">
-      <li><b>📋 Copiar resultado</b>Copia um texto pronto para colar no WhatsApp ou onde precisar.</li>
+      <li><b>📋 Copiar resultado</b>Copia um texto pronto para colar, com os itens em <b>ordem A–Z</b>.</li>
+      <li><b>💬 WhatsApp</b>Abre o WhatsApp com o mesmo texto.</li>
       <li><b>📄 Baixar PDF</b>Gera o PDF da lista e mantém os dados.</li>
       <li><b>✅ Encerrar pesagem</b>Baixa o PDF final. Use ao terminar o lote.</li>
       <li><b>🗑️ Limpar tudo</b>Move a lista toda para a lixeira (pede senha).</li>
     </ul>
+    <h3>Como é o PDF</h3>
+    <p>Cabeçalho azul marinho com a data, <b>cartões de resumo</b> (itens, bruto, tara e líquido), o <b>item mais pesado</b> e a tabela em <b>ordem alfabética</b>, separada por letra. Itens em atenção ficam destacados, há uma linha de <b>Total geral</b> e cada página mostra "Página X de Y" e a versão do site.</p>
     <h3>Backup dos códigos</h3>
     <ol>
-      <li>Na Lista, toque em <b>⬇️ Salvar códigos</b>. Um arquivo .json é baixado.</li>
+      <li>Em Pesagens de Hoje, toque em <b>⬇️ Salvar códigos</b>. Um arquivo .json é baixado.</li>
       <li>Em outro aparelho (ou depois de limpar o navegador), toque em <b>⬆️ Carregar códigos</b> e escolha esse arquivo.</li>
     </ol>
   </section>
 
-  <section class="step" id="s9">
-    <h2><em>9</em> Dúvidas e erros comuns</h2>
-    <details><summary>O líquido deu muito alto ou muito baixo</summary>Você provavelmente digitou o peso com vírgula. Digite em gramas: 1,5 kg = <code>1500</code>.</details>
+  <section class="step" id="s10">
+    <h2><em>10</em> Dúvidas e erros comuns</h2>
+    <details><summary>O líquido deu muito alto ou muito baixo</summary>Confira a unidade ao lado do peso: com <b>kg</b> digite 1,5; com <b>g</b> digite 1500.</details>
     <details><summary>O código não é reconhecido</summary>Ele ainda não foi cadastrado. Digite o nome e toque em "Registrar este código".</details>
-    <details><summary>O líquido está diferente do esperado</summary>Confira a aba Tara e a quantidade de bandejas.</details>
-    <details><summary>Apaguei sem querer</summary>Abra a Lixeira na Lista e restaure em até 7 dias.</details>
+    <details><summary>O líquido está diferente do esperado</summary>Confira as taras em Configurações, a quantidade de bandejas e o total mostrado abaixo do campo da tara personalizada.</details>
+    <details><summary>Apaguei sem querer</summary>Abra a Lixeira e restaure em até 7 dias.</details>
+    <details><summary>O site não mudou depois de uma atualização</summary>Feche e abra o site de novo (ou o app instalado). A versão aparece na barra do topo e em Configurações — se for a nova, está atualizado.</details>
     <details><summary>Sumiram meus dados</summary>Os dados ficam no navegador. Limpar dados do navegador, usar aba anônima ou trocar de aparelho os faz sumir. Faça o backup de códigos com frequência.</details>
   </section>
 
-  <section class="step" id="s10">
-    <h2><em>10</em> Configurações, tema e instalar o app</h2>
-    <p>Toque no ícone <b>⚙️</b> no topo da tela para abrir o painel de configurações:</p>
+  <section class="step" id="s11">
+    <h2><em>11</em> Configurações, tema, versão e instalar o app</h2>
+    <p>Em <b>⚙️ Configurações</b> você encontra:</p>
     <ul class="cards">
       <li><b>🔊 Som e vibração</b>Toca um som e vibra o celular ao adicionar uma pesagem.</li>
-      <li><b>🔆 Manter a tela ligada</b>Evita que a tela do celular apague sozinha enquanto você está pesando.</li>
+      <li><b>🔆 Manter a tela ligada</b>Evita que a tela apague sozinha enquanto você pesa.</li>
+      <li><b>🌧️ Efeito de chuva</b>Gotas suaves no fundo. Desligue se preferir a tela limpa.</li>
+      <li><b>🏷️ Versão do site</b>Mostra o número da versão instalada.</li>
     </ul>
-    <p>No mesmo painel, se aparecer o botão <b>📲 Instalar o app</b>, toque nele para colocar o PesaCerto na tela inicial do celular, como um aplicativo — assim ele abre mais rápido e continua funcionando <b>mesmo sem internet</b>. No iPhone não aparece esse botão: toque em <b>Compartilhar</b> e depois em <b>Adicionar à Tela de Início</b>.</p>
-    <p>Para trocar entre tema <b>claro</b> e <b>escuro</b>, use o interruptor <b>☀️ / 🌙</b> que fica ao lado do ⚙️, no topo da tela. A escolha fica salva neste navegador.</p>
-    <div class="note info">💡 Essas preferências (som, tela, tema) não afetam suas pesagens nem seus códigos — são só do jeito que a tela se comporta neste aparelho.</div>
+    <p>Se aparecer o botão <b>📲 Instalar o app</b>, toque nele para colocar o PesaCerto na tela inicial, como um aplicativo — abre mais rápido e funciona <b>mesmo sem internet</b>. No iPhone: toque em <b>Compartilhar</b> e depois em <b>Adicionar à Tela de Início</b>.</p>
+    <p>Para trocar entre tema <b>claro</b> e <b>escuro</b>, use o interruptor <b>☀️ / 🌙</b> no topo da tela. A escolha fica salva neste navegador.</p>
+    <div class="note info">💡 Essas preferências não afetam suas pesagens nem seus códigos — só o jeito que a tela se comporta neste aparelho.</div>
   </section>
 
   <section class="step">
@@ -169,11 +196,11 @@
     <ul class="check" id="check">
       <li><label><input type="checkbox"> Tara das bandejas conferida</label></li>
       <li><label><input type="checkbox"> Código digitado e reconhecido</label></li>
-      <li><label><input type="checkbox"> Peso em gramas, sem vírgula</label></li>
-      <li><label><input type="checkbox"> Bandeja e quantidade corretas</label></li>
+      <li><label><input type="checkbox"> Peso igual ao visor, com a unidade (kg/g) certa</label></li>
+      <li><label><input type="checkbox"> Bandeja, quantidade e taras somadas corretas</label></li>
       <li><label><input type="checkbox"> Líquido do painel conferido antes de adicionar</label></li>
+      <li><label><input type="checkbox"> Itens duvidosos marcados como atenção</label></li>
       <li><label><input type="checkbox"> PDF baixado ao encerrar</label></li>
-      <li><label><input type="checkbox"> Configurações (som, tela) do jeito que você prefere</label></li>
     </ul>
   </section>
 </main>
