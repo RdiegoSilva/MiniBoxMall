@@ -969,3 +969,51 @@ select option{ color:#0f1d3a; background:#fff; }
 @media (max-width:760px){ .bulk-bar{ top:0; position:static; } .bulk-btns{ width:100%; } .bulk-btns .btn{ flex:1; } }
 
 .pref-select{ -webkit-appearance:none; appearance:none; min-height:38px; padding:6px 32px 6px 12px; border:1px solid var(--border); border-radius:9px; background-color:var(--bg); color:var(--text); font-size:14px; font-weight:700; font-family:var(--font-mono); background-image:url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='12' height='8' fill='none' stroke='%23647266' stroke-width='2' stroke-linecap='round' stroke-linejoin='round'%3E%3Cpath d='m1 1.5 5 5 5-5'/%3E%3C/svg%3E"); background-repeat:no-repeat; background-position:right 10px center; }
+
+.display-top{ display:flex; align-items:center; justify-content:space-between; gap:10px; margin-bottom:2px; }
+.pref-select-dark{ background-color:rgba(255,255,255,.14); color:#fff; border:1px solid rgba(255,255,255,.3); font-family:var(--font-mono); font-size:12.5px; font-weight:700; min-height:30px; padding:4px 26px 4px 10px; border-radius:8px; background-image:url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='12' height='8' fill='none' stroke='%23ffffff' stroke-width='2' stroke-linecap='round' stroke-linejoin='round'%3E%3Cpath d='m1 1.5 5 5 5-5'/%3E%3C/svg%3E"); background-repeat:no-repeat; background-position:right 8px center; }
+.pref-select-dark option{ color:#0f1d3a; background:#fff; }
+@media (max-width:760px){ .display-top{ flex-wrap:wrap; } }
+
+
+/* ---- Colar Pesagem ---- */
+.colar-btn{ margin-left:auto; }
+.panel-title{ flex-wrap:wrap; row-gap:8px; }
+.modal-box-lg{ max-width:520px; width:94%; text-align:left; }
+.modal-box-lg .modal-title{ font-size:17px; font-weight:800; margin:0 0 6px; }
+.modal-box-lg .modal-msg{ text-align:left; font-size:13.5px; color:var(--text-muted); margin:0 0 4px; }
+.mini-ex{ font-size:12px; color:var(--text-muted); margin:0 0 10px; }
+.mini-ex code{ background:var(--bg); border:1px solid var(--border); border-radius:6px; padding:1px 6px; font-family:var(--font-mono); }
+.colar-textarea{
+  width:100%; min-height:130px; resize:vertical; border:1px solid var(--border); border-radius:10px; padding:12px;
+  font-family:var(--font-mono); font-size:14px; background:var(--bg); color:var(--text); -webkit-appearance:none; appearance:none;
+}
+.colar-textarea:focus{ outline:none; border-color:var(--accent); box-shadow:0 0 0 4px var(--accent-soft); }
+.colar-resultado{ margin-top:12px; max-height:260px; overflow-y:auto; border:1px solid var(--border); border-radius:10px; padding:12px; background:var(--bg); font-size:13px; }
+.colar-resultado b{ display:block; margin:8px 0 4px; font-size:12.5px; }
+.colar-resultado b:first-child{ margin-top:0; }
+.colar-ok{ color:#16a34a; } .colar-erro{ color:#dc2626; }
+.colar-lista{ list-style:none; margin:0 0 4px; padding:0; display:flex; flex-direction:column; gap:4px; }
+.colar-lista li{ background:var(--card); border:1px solid var(--border); border-radius:8px; padding:6px 10px; }
+.colar-tag{ float:right; font-size:10.5px; font-weight:700; color:var(--accent-dark); background:var(--accent-soft); padding:2px 8px; border-radius:99px; }
+@media (max-width:760px){ .colar-btn{ width:100%; margin-left:0; order:3; } }
+
+
+/* ---- Colar Pesagem virou aba própria (não é mais modal) ---- */
+.panel-colar .modal-msg{ text-align:left; font-size:13.5px; color:var(--text-muted); margin:0 0 4px; }
+.panel-colar .mini-ex{ font-size:12px; color:var(--text-muted); margin:0 0 12px; }
+.mini-ex code{ background:var(--bg); border:1px solid var(--border); border-radius:6px; padding:1px 6px; font-family:var(--font-mono); }
+.colar-textarea{
+  width:100%; min-height:160px; resize:vertical; border:1px solid var(--border); border-radius:10px; padding:12px;
+  font-family:var(--font-mono); font-size:14px; background:var(--bg); color:var(--text); -webkit-appearance:none; appearance:none;
+}
+.colar-textarea:focus{ outline:none; border-color:var(--accent); box-shadow:0 0 0 4px var(--accent-soft); }
+.colar-resultado{ margin-top:14px; max-height:340px; overflow-y:auto; border:1px solid var(--border); border-radius:10px; padding:12px; background:var(--bg); font-size:13px; }
+.colar-resultado b{ display:block; margin:8px 0 4px; font-size:12.5px; }
+.colar-resultado b:first-child{ margin-top:0; }
+.colar-ok{ color:#16a34a; } .colar-erro{ color:#dc2626; }
+.colar-lista{ list-style:none; margin:0 0 4px; padding:0; display:flex; flex-direction:column; gap:4px; }
+.colar-lista li{ background:var(--card); border:1px solid var(--border); border-radius:8px; padding:6px 10px; }
+.colar-tag{ float:right; font-size:10.5px; font-weight:700; color:var(--accent-dark); background:var(--accent-soft); padding:2px 8px; border-radius:99px; }
+.colar-actions{ justify-content:flex-start; margin-top:16px; }
+@media (max-width:760px){ .colar-actions{ flex-wrap:wrap; } .colar-actions .btn{ flex:1 1 auto; } }

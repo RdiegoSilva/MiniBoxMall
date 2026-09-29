@@ -1,5 +1,6 @@
 (function(){
   "use strict";
+  function esc(v){ return String(v == null ? "" : v).replace(/[&<>"]/g, function(c){ return {"&":"&amp;","<":"&lt;",">":"&gt;","\"":"&quot;"}[c]; }); }
 
   var TARA_KEY = "pesacerto_taras_v2";
   var LISTA_KEY = "pesacerto_lista_v2";
@@ -54,144 +55,125 @@
   var CATALOGO_VERSAO = "2026-09-24";
   var CATALOGO_KEY = "pesacerto_catalogo_versao";
   var DEFAULT_CODIGOS = {
-      // SUÍNOS CONGELADOS
-
-  "206": "CARRÉ SUÍNO",
-  "6081": "COSTELA SUÍNA",
-  "10148": "COSTELA SUÍNA CONGELADA",
-  "9265": "PICANHA SUÍNA DO CHEF",
-  "8909": "PRIME RIB GUAÍUBA SUÍNO",
-  "8595": "SOBREPALETA SUÍNA",
-  "212": "PERNIL SUÍNO C/ OSSO",
-  "8940": "PERNIL SUÍNO S/ OSSO",
-  "10335": "PICANHA SUÍNA PERDIGÃO NA BRASA",
-  "789300091189": "PICANHA SUÍNA SADIA 900G",
-  "8903": "SARRABULHO SUÍNO",
-  "926": "TRIPA SUÍNA",
-
-  // SUÍNOS RESF
-
-  "629": "BISTECA PALETA SUÍNA",
-  "8901": "COPA LOMBO SUÍNO",
-  "627": "COSTELA SUÍNA",
-  "8900": "LOMBO SUÍNO C/ OSSO",
-  "8899": "PANCETA SUÍNA",
-  "624": "PERNIL SUÍNO",
-  "7181": "TOUCINHO SUÍNO",
-
-  // BOVINOS
-
-  "7534": "ANCHO ESTÂNCIA 92",
-  "7643": "BABY BEEF ESTÂNCIA 92",
-  "938": "BANANINHA PARA CHURRASCO",
-  "7645": "BOMBOM ALCATRA ESTÂNCIA 92",
-  "9952": "CHORIZO ESTÂNCIA 92 ANGUS",
-  "7644": "CHORIZO ESTÂNCIA 92 PEDAÇO",
-  "8323": "COSTELA JANELÃO ESTÂNCIA 92",
-  "10760": "CUPIM BOLINHA ESTÂNCIA 92",
-  "861": "CUPIM BOVINO CONGELADO",
-  "8854": "FRALDINHA ESTÂNCIA 92",
-  "8144": "MAMINHA ALCATRA ESTÂNCIA 92",
-  "9953": "MAMINHA ANA PAULA ANGUS",
-  "8836": "MAMINHA ARGENTINA PLATE",
-  "9589": "MAMINHA BOVINA PLENA",
-  "9609": "MAMINHA FRIBOI",
-  "9333": "MAMINHA FRIGOTIL",
-  "10811": "MAMINHA IMPORTADA BEEF CLUB",
-  "9608": "MAMINHA MATURATTA",
-  "8881": "MAMINHA PUL NACIONAL",
-  "10406": "MAMINHA PUL SELECTION",
-  "9259": "MAMINHA PUL URUGUAIA",
-  "9611": "MAMINHA URUGUAIA FRIGOY",
-  "7896": "PICANHA ARGENTINA CABANAS LAS",
-  "10568": "PICANHA ARGENTINA FINEXCOR",
-  "9613": "PICANHA ARGENTINA GORINA",
-  "9954": "PICANHA ANA PAULA ANGUS",
-  "10650": "PICANHA AUSTRALIANA KILCOY",
-  "8276": "PICANHA ESTÂNCIA 92",
-  "9612": "PICANHA MATURATTA",
-  "9260": "PICANHA PUL NACIONAL",
-  "9261": "PICANHA PUL URUGUAIA",
-  "9615": "PICANHA URUGUAIA PANDO",
-  "10891": "PICANHA BOVINA FRIBOI EM MEDALHÃO",
-  "9956": "SHORT RIBS MINERVA ANGUS",
-  "8238": "TOMAHAWK ESTÂNCIA 92",
-
-  // BOVINOS RESF/CONG
-
-  "9604": "CHORIZO DO CHEF",
-  "8866": "CHORIZO MINERVA MESTRE",
-
-  // BOVINOS DIV - MIÚDOS
-
-  "805": "BAÇO BOVINO",
-  "867": "BIFE DE FÍGADO BOVINO",
-  "754": "BUCHO BOVINO",
-  "1169": "CORAÇÃO BOVINO",
-  "4": "FÍGADO BOVINO",
-  "934": "BIFE DE FÍGADO BOVINO",
-  "1936": "LÍNGUA BOVINA",
-  "748": "MOCOTÓ BOVINO",
-  "755": "PANELADA MINIBOX",
-  "1645": "RABO BOVINO",
-  "213": "RIM BOVINO",
-  "749": "TRIPA BOVINA",
-
-  // BOVINOS — COSTELA / DIANTEIRO E TRASEIRO
-
-  "184": "COSTELA P.A.",
-  "9048": "COSTELA JANELÃO RESERVA",
-  "10961": "COSTELA TRASEIRO FRIBOI MINGA",
-  "200": "BIFE AMACIADO",
-  "8670": "BIFE LIGHT",
-  "167": "BISTECA PAULISTA",
-  "6096": "BISTECA GAÚCHA",
-  "319": "COSTELA PEITO",
-  "180": "CUPIM",
-  "176": "LOMBO C/ OSSO",
-  "68": "MÃO DE VACA",
-  "179": "CARNE MOÍDA",
-  "940": "CARNE MOÍDA ESPECIAL",
-  "815": "MÚSCULO BOVINO",
-  "182": "OSSO BUCO",
-  "6035": "PALETA BOVINA",
-  "6095": "STROGONOFF",
-  "1234": "TESTE",
-
-  // BOVINOS — CORTES TRASEIROS
-
-  "390": "ALCATRA BOVINA",
-  "677": "BISTECA BOVINA",
-  "7272": "CAPA DE CONTRA FILÉ",
-  "397": "CONTRA FILÉ",
-  "398": "COXÃO DURO",
-  "388": "COXÃO MOLE",
-  "429": "FILÉ MIGNON",
-  "650": "FRALDINHA",
-  "389": "LAGARTO",
-  "384": "MAMINHA",
-  "653": "MÚSCULO BOVINO",
-  "9686": "MÚSCULO BOVINO",
-  "399": "PATINHO",
-  "385": "PICANHA",
-  "8915": "PICANHA FATIADA FRIGOTIL",
-
-  // BOVINOS — DIVERSOS
-
-  "9298": "CARNE DE SOL",
-
-  // OVINOS E CAPRINOS
-
-  "10648": "ALCATRA DE CORDEIRO ESTÂNCIA 92",
-  "7614": "BISTECA DE CARNEIRO",
-  "9785": "CARRÉ DE CORDEIRO C. OURO FRANCÊS",
-  "10338": "CARRÉ DE CORDEIRO GUAÍUBA FRANCÊS",
-  "9781": "COSTELA DE CORDEIRO C. OURO",
-  "8669": "COSTELA DE CORDEIRO ESTÂNCIA 92",
-  "8667": "PALETA DE CORDEIRO ESTÂNCIA 92",
-  "8668": "PERNIL DE CORDEIRO ESTÂNCIA 92",
-  "9926": "PICANHA DE CORDEIRO GUAÍUBA",
-  "10649": "T-BONE DE CORDEIRO ESTÂNCIA 92"
+    // SUÍNOS
+    "206": "CARRE SUÍNO",
+    "6081": "COSTELA SUÍNA",
+    "10148": "COSTELA SUÍNA CON",
+    "9265": "PICANHA SUÍNA DO CHEF",
+    "8909": "PRIME RIB GUAÍUBA SUÍNO",
+    "8595": "SOBREPALETA SUÍNA",
+    "212": "PERNIL SUÍNO C/OSSO",
+    "8940": "PERNIL SUÍNO S/OSSO",
+    "10335": "PICANHA SUÍNA PERDIGÃO NABRASA",
+    "789300091189": "PICANHA SUÍNA SADIA 900G",
+    "8903": "SARRAB SUÍNO",
+    "926": "TRIPA SUÍNA",
+    // SUÍNOS RESF
+    "629": "BISTECA PALETA SUÍNA",
+    "8901": "COPA LOMBO SUÍNO",
+    "627": "COSTELA SUÍNA",
+    "8900": "LOMBO SUÍNO C/OSSO",
+    "8899": "PANCETA SUÍNA",
+    "624": "PERNIL SUÍNO",
+    "7181": "TOUCINHO SUÍNO",
+    // BOVINOS
+    "7534": "ANCHO ESTÂNCIA 92",
+    "7643": "BABY BEEF ESTÂNCIA 92",
+    "938": "BANANINHA P/ CHURRASCO",
+    "7645": "BOMBOM ALC ESTÂNCIA 92",
+    "9952": "CHORIZO ESTÂNCIA 92 ANGUS",
+    "7644": "CHORIZO ESTÂNCIA 92 PEDAÇO",
+    "8323": "COSTELA JAN ESTÂNCIA 92",
+    "10760": "CUPIM BOLINHA ESTÂNCIA 92",
+    "861": "CUPIM BOVINO CONG",
+    "8854": "FRALDINHA ESTÂNCIA 92",
+    "8144": "MAMINHA ALC ESTÂNCIA 92",
+    "9953": "MAMINHA ANA PAUL ANG",
+    "8836": "MAMINHA ARG PLATE",
+    "9589": "MAMINHA BOV PLENA",
+    "9609": "MAMINHA FRIBOI",
+    "9333": "MAMINHA FRIGOTIL",
+    "10811": "MAMINHA IMP BEEF CLUB",
+    "9608": "MAMINHA MATURATTA",
+    "8881": "MAMINHA PUL NACIONAL",
+    "10406": "MAMINHA PUL SELECTION",
+    "9259": "MAMINHA PUL URUGUAIA",
+    "9611": "MAMINHA URUG FRIGOY",
+    "7896": "PICANHA ARG CABANAS LAS",
+    "10568": "PICANHA ARG FINEXCOR",
+    "9613": "PICANHA ARG GORINA",
+    "9954": "PICANHA ANA PAUL ANG",
+    "10650": "PICANHA AUS KILCOY",
+    "8276": "PICANHA ESTÂNCIA 92",
+    "9612": "PICANHA MATURATTA",
+    "9260": "PICANHA PUL NACIONAL",
+    "9261": "PICANHA PUL URUGUAIA",
+    "9615": "PICANHA URUG PANDO",
+    "10891": "PICANHA BOVINA FRIBOI EM MEDALHÃO",
+    "9956": "SHORT RIBS MINERVA ANGUS",
+    "8238": "TOMAHAWK ESTÂNCIA 92",
+    // BOVINOS RESF/CONG
+    "9604": "CHORIZO DO CHEF",
+    "8866": "CHORIZO MINERVA MESTRE",
+    // BOVINOS DIV - MIÚDOS
+    "805": "BAÇO BOVINO",
+    "867": "BIFE FÍGADO BOVINO",
+    "754": "BUCHO BOVINO",
+    "1169": "CORAÇÃO BOVINO",
+    "4": "FÍGADO BOVINO",
+    "934": "BIFE FÍGADO BOVINO",
+    "1936": "LÍNGUA BOVINA",
+    "748": "MOCOTÓ BOVINO",
+    "755": "PANELADA MINIBOX",
+    "1645": "RABO BOVINO",
+    "213": "RINS BOVINO",
+    "749": "TRIPA BOVINA",
+    // BOVINOS — COSTELA / DIANTEIRO E TRÁS
+    "184": "COSTEL P.A",
+    "9048": "COST JANELÃO RESERVA",
+    "10961": "COST TRASEIRO FRIBOI MINGA",
+    "200": "BIFE AMAC",
+    "8670": "BIFE LIGHT",
+    "167": "BIST PAULI",
+    "6096": "BISTECA GA",
+    "319": "COST PEITO",
+    "180": "CUPIM",
+    "176": "LOMBO C/OS",
+    "68": "MÃO DE VAC",
+    "179": "MOÍDA",
+    "815": "MÚSCULO BO",
+    "182": "OSSO BUCO",
+    "6035": "PALETA",
+    "6095": "STROGONOFF",
+    // BOVINOS — CORTES TRÁS
+    "390": "ALCATRA BO",
+    "677": "BISTECA BO",
+    "7272": "CAPA CONTR",
+    "397": "CONTRA FIL",
+    "398": "COXÃO DURO",
+    "388": "COXÃO MOLE",
+    "429": "FILE MIGNO",
+    "650": "FRALDINHA",
+    "389": "LAGARTO",
+    "384": "MAMINHA",
+    "653": "MUSCULO BO",
+    "9686": "MUSCULO BO",
+    "399": "PATINHO",
+    "385": "PICANHA",
+    "8915": "PICANHA FATIADA FRIGOTIL",
+    // BOVINOS — DIVERSOS
+    "9298": "CARNE DE SOL",
+    // OVINOS E CAPRINOS
+    "10648": "ALCATRA CORD ESTÂNCIA 92",
+    "7614": "BISTECA DE CARNEIRO",
+    "9785": "CARRE CORD C.OURO FRANCES",
+    "10338": "CARRE CORD GUIAUBA FRANCES",
+    "9781": "COST CORDEIR C.OURO",
+    "8669": "COST CORDEIR ESTÂNCIA 92",
+    "8667": "PALETA CORD ESTÂNCIA 92",
+    "8668": "PERNIL CORD ESTÂNCIA 92",
+    "9926": "PICANHA CORD GUIAUBA",
+    "10649": "T BONE CORD ESTÂNCIA 92"
   };
 
   // Aplica a lista padrão: códigos novos são criados; ao subir a versão do catálogo, os nomes
@@ -1649,6 +1631,105 @@
       toast("🔢 Formato: " + (casas === 1 ? "101,9 kg" : "101,900 kg"));
     });
   })();
+
+  /* ---------- Colar Pesagem: aba própria para importar várias pesagens de uma vez, por código ---------- */
+  (function(){
+    var textarea = document.getElementById("colarTexto");
+    if(!textarea) return;
+    var resultadoBox = document.getElementById("colarResultado"), btnProcessar = document.getElementById("colarProcessar"),
+        btnConfirmar = document.getElementById("colarConfirmar"), btnCancelar = document.getElementById("colarCancelar");
+    var analisados = null;
+
+    function fecharColar(){
+      textarea.value = ""; resultadoBox.hidden = true; resultadoBox.innerHTML = "";
+      btnConfirmar.hidden = true; btnProcessar.hidden = false; analisados = null;
+    }
+    btnCancelar.addEventListener("click", fecharColar);
+
+    // extrai código (primeiro grupo de dígitos/letras no início) e o peso (último número da linha)
+    function analisarLinha(linhaOriginal){
+      var linha = linhaOriginal.trim();
+      if(!linha) return null;
+      var mCod = linha.match(/^([A-Za-z0-9]+)/);
+      if(!mCod) return { erro: "sem código", linha: linhaOriginal };
+      var codigo = mCod[1];
+      var resto = linha.slice(mCod[0].length);
+      var numeros = resto.match(/\d+(?:[.,]\d+)?\s*(kg|g)?/gi) || [];
+      if(!numeros.length) return { erro: "sem peso", linha: linhaOriginal, codigo: codigo };
+      var ultimo = numeros[numeros.length - 1];
+      var unidadeG = /g\s*$/i.test(ultimo) && !/kg\s*$/i.test(ultimo);
+      var n = parseFloat(ultimo.replace(",", ".").replace(/[a-z]/gi, ""));
+      if(isNaN(n)) return { erro: "peso inválido", linha: linhaOriginal, codigo: codigo };
+      var pesoKg = unidadeG ? n / 1000 : n;
+      return { codigo: codigo, pesoBrutoKg: pesoKg, linha: linhaOriginal };
+    }
+
+    function processar(){
+      var linhas = textarea.value.split(/\r?\n/);
+      var itens = [], semPeso = [], semCodigo = [], naoReconhecidos = [];
+      linhas.forEach(function(l){
+        var r = analisarLinha(l);
+        if(!r) return;
+        if(r.erro === "sem código"){ semCodigo.push(r.linha); return; }
+        if(r.erro){ semPeso.push(r.linha); return; }
+        var cad = codigos[r.codigo] || codigos[r.codigo.toUpperCase()] || codigos[r.codigo.toLowerCase()];
+        if(!cad){ naoReconhecidos.push(r); return; }
+        itens.push({ codigo: r.codigo, nome: cad.nome, tipo: cad.tipo || "nenhuma", pesoBrutoKg: r.pesoBrutoKg });
+      });
+      analisados = itens;
+
+      var html = "";
+      if(itens.length){
+        html += "<b class='colar-ok'>✔️ " + itens.length + (itens.length === 1 ? " pesagem pronta para adicionar:" : " pesagens prontas para adicionar:") + "</b>";
+        html += "<ul class='colar-lista'>" + itens.map(function(it){
+          var t = it.tipo === "mista" || it.tipo === "personalizada" ? "revisar tara" : tipoLabelBase(it.tipo);
+          return "<li><b>" + esc(it.codigo) + "</b> " + esc(it.nome) + " — " + fmt(it.pesoBrutoKg) + " kg <span class='colar-tag'>" + t + "</span></li>";
+        }).join("") + "</ul>";
+      }
+      if(naoReconhecidos.length){
+        html += "<b class='colar-erro'>⚠️ " + naoReconhecidos.length + " código" + (naoReconhecidos.length === 1 ? "" : "s") + " não encontrado no catálogo — cadastre em Configurações e cole de novo:</b>";
+        html += "<ul class='colar-lista'>" + naoReconhecidos.map(function(r){ return "<li><b>" + esc(r.codigo) + "</b> — " + esc(r.linha) + "</li>"; }).join("") + "</ul>";
+      }
+      if(semPeso.length || semCodigo.length){
+        html += "<b class='colar-erro'>❌ " + (semPeso.length + semCodigo.length) + " linha(s) não entendida(s):</b>";
+        html += "<ul class='colar-lista'>" + semPeso.concat(semCodigo).map(function(l){ return "<li>" + esc(l) + "</li>"; }).join("") + "</ul>";
+      }
+      if(!html) html = "<p class='mini-ex'>Cole ao menos uma linha com código e peso.</p>";
+      resultadoBox.innerHTML = html; resultadoBox.hidden = false;
+      btnConfirmar.hidden = itens.length === 0;
+      btnProcessar.hidden = itens.length > 0;
+    }
+    btnProcessar.addEventListener("click", processar);
+
+    function tara_para_tipo(tipo){
+      if(tipo === "grande" || tipo === "pequena") return taraFor(tipo);
+      return 0; // mista/personalizada/nenhuma: sem info suficiente na importação, fica 0 (revisar depois)
+    }
+
+    btnConfirmar.addEventListener("click", function(){
+      if(!analisados || !analisados.length) return;
+      var snapDesfazer = deepCopy(lista);
+      var t = agora();
+      analisados.forEach(function(it){
+        var tara = tara_para_tipo(it.tipo);
+        var pesagem = { pesoBruto: it.pesoBrutoKg, tara: tara, tipo: (it.tipo === "grande" || it.tipo === "pequena") ? it.tipo : "nenhuma", qtdBandejas: 1, mista: null, data: t.data, hora: t.hora, horarioIso: t.iso };
+        var idx = lista.findIndex(function(x){ return x.codigo && x.codigo.toLowerCase() === it.codigo.toLowerCase(); });
+        if(idx > -1){
+          lista[idx].pesagens.push(pesagem);
+        } else {
+          lista.push({ codigo: it.codigo, nome: it.nome, status: "", pesagens: [pesagem] });
+        }
+      });
+      safeSet(LISTA_KEY, lista);
+      mostrarDesfazer(snapDesfazer);
+      renderLista();
+      toast("✅ " + analisados.length + (analisados.length === 1 ? " pesagem colada" : " pesagens coladas"));
+      if(window.PesaFX) PesaFX.ok();
+      fecharColar();
+      ativarAba("dashboard");
+    });
+  })();
+
   renderLista();
   renderLixeira();
 })();
